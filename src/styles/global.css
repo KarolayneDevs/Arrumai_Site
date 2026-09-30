@@ -1,0 +1,76 @@
+/* =====================================================================
+   ESTILOS GLOBAIS: valem para o site inteiro (reset, corpo, títulos...)
+   ===================================================================== */
+
+/* Reset: tira as margens padrão do navegador para começar do zero */
+*,
+*::before,
+*::after {
+  box-sizing: border-box; /* padding e borda não aumentam a largura do elemento */
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth; /* rolagem suave ao clicar em links como #como-funciona */
+  scroll-padding-top: 88px; /* compensa a altura do cabeçalho fixo */
+}
+
+body {
+  font-family: var(--fonte);
+  font-size: 1rem;          /* corpo: leitura confortável em tela */
+  line-height: 1.6;
+  color: var(--rio-negro);
+  background: var(--papel); /* "Papel" é a cor de maior proporção no site (45%) */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Escala tipográfica do guia: H1 grande e bold, H2 menor e bold */
+h1, h2, h3 {
+  font-weight: 700;
+  line-height: 1.15;
+}
+h1 { font-size: clamp(2rem, 5vw, 3.2rem); letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.5rem, 3vw, 2rem); letter-spacing: -0.01em; }
+h3 { font-size: 1.05rem; }
+
+p { max-width: 65ch; } /* linhas curtas são mais fáceis de ler */
+
+img, svg { display: block; max-width: 100%; }
+
+a { color: inherit; }
+
+ul, ol { padding: 0; list-style: none; }
+
+/* Foco visível para quem navega pelo teclado (acessibilidade, RNF01) */
+:focus-visible {
+  outline: 3px solid var(--por-do-sol);
+  outline-offset: 3px;
+}
+
+/* Container: centraliza o conteúdo e limita a largura */
+.container {
+  width: min(100% - 2.5rem, var(--largura-max));
+  margin-inline: auto;
+}
+
+/* Texto só para leitores de tela (fica escondido visualmente) */
+.so-leitor {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Respeita quem desativou animações no sistema operacional */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

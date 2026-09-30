@@ -1,0 +1,34 @@
+/* =====================================================================
+   VARIÁVEIS DA IDENTIDADE VISUAL (guia ARRUMAÍ_IDVISUAL, seção 03)
+   Ficam em um só lugar: para mudar uma cor do site inteiro, mude aqui.
+   ===================================================================== */
+:root {
+  /* --- As 5 cores originais da marca --- */
+  --rio-negro: #3a2e22;   /* texto, títulos, wordmark e fundos escuros */
+  --papel: #f8f3e9;       /* fundo neutro do site */
+  --por-do-sol: #cb7c4e;  /* destaques e chamadas para ação (botões) */
+  --solimoes: #c9a468;    /* etapas intermediárias e apoio */
+  --mata: #7e9473;        /* conclusão e aprovação */
+
+  /* --- Tons derivados (versões suaves das cores acima) --- */
+  --branco: #ffffff;
+  --papel-escuro: #efe6d6;
+  --borda: #e3d9c8;
+  --texto-suave: #6b5d4e;          /* texto secundário, legendas */
+  --por-do-sol-claro: #f7e6db;     /* fundo do selo "Em andamento" */
+  --solimoes-claro: #f3e8d0;       /* fundo do selo "Em análise" */
+  --mata-claro: #e5ebe1;           /* fundo do selo "Concluída" */
+  --cinza-claro: #e6e2da;          /* fundo do selo "Recebida" */
+
+  /* --- Tipografia: uma só família sans (Liberation Sans) --- */
+  --fonte: 'Liberation Sans', Arial, Helvetica, sans-serif;
+
+  /* --- Bordas arredondadas e sombra --- */
+  --raio-p: 8px;
+  --raio-m: 14px;
+  --raio-g: 22px;
+  --sombra: 0 8px 24px rgba(58, 46, 34, 0.09);
+
+  /* --- Largura máxima do conteúdo em telas grandes --- */
+  --largura-max: 1120px;
+}
