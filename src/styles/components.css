@@ -1,0 +1,194 @@
+/* =====================================================================
+   ESTILOS DOS COMPONENTES REUTILIZÁVEIS
+   ===================================================================== */
+
+/* ---------- Logo ---------- */
+.logo { display: inline-flex; align-items: center; gap: 0.6rem; }
+.logo__nome { font-weight: 700; letter-spacing: -0.03em; line-height: 1; color: var(--rio-negro); }
+.logo__acento { color: var(--por-do-sol); } /* o acento do "í" é a assinatura da marca */
+.logo--escuro .logo__nome { color: var(--papel); }
+
+/* ---------- Botões ---------- */
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.4rem;
+  border: 2px solid transparent;
+  border-radius: var(--raio-m);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.15s, background 0.15s, color 0.15s;
+}
+.botao:hover { transform: translateY(-1px); }
+.botao:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.botao--principal { background: var(--por-do-sol); color: var(--branco); }
+.botao--principal:hover { background: #b96b3f; }
+
+.botao--secundario { background: transparent; color: var(--rio-negro); border-color: var(--rio-negro); }
+.botao--secundario:hover { background: var(--rio-negro); color: var(--papel); }
+
+.botao--texto {
+  background: none;
+  color: var(--rio-negro);
+  padding: 0.4rem 0.2rem;
+  border-radius: 0;
+  border-bottom-color: var(--rio-negro);
+}
+
+/* Variante do secundário para fundos escuros */
+.ondas .botao--secundario,
+.faixa-escura .botao--secundario { color: var(--papel); border-color: var(--papel); }
+.faixa-escura .botao--secundario:hover { background: var(--papel); color: var(--rio-negro); }
+
+/* ---------- Selo de status ---------- */
+.selo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.2rem 0.8rem;
+  border: 1.5px solid;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.selo::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.selo--neutro { background: var(--cinza-claro); border-color: #b9b2a6; color: var(--rio-negro); }
+.selo--apoio { background: var(--solimoes-claro); border-color: var(--solimoes); color: #6e5220; }
+.selo--destaque { background: var(--por-do-sol-claro); border-color: var(--por-do-sol); color: #8a4622; }
+.selo--sucesso { background: var(--mata-claro); border-color: var(--mata); color: #445a3b; }
+.selo--encerrado { background: var(--branco); border-color: var(--texto-suave); color: var(--texto-suave); }
+
+/* ---------- Linha do tempo (horizontal no computador) ---------- */
+.fluxo { display: flex; }
+.fluxo__etapa { position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.5rem; }
+.fluxo__marcador {
+  position: relative;
+  z-index: 1; /* fica por cima da linha */
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid var(--borda);
+  background: var(--papel);
+  color: var(--papel);
+}
+/* A linha que liga uma etapa à próxima */
+.fluxo__etapa:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 12px; left: 50%;
+  width: 100%; height: 4px;
+  background: var(--borda);
+}
+.fluxo__etapa--feita:not(:last-child)::after { background: var(--por-do-sol); }
+.fluxo__etapa--feita .fluxo__marcador { background: var(--rio-negro); border-color: var(--rio-negro); }
+.fluxo__etapa--atual .fluxo__marcador { background: var(--branco); border-color: var(--por-do-sol); box-shadow: 0 0 0 5px var(--por-do-sol-claro); }
+.fluxo__etapa--atual .fluxo__marcador::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--por-do-sol); }
+.fluxo__texto { display: flex; flex-direction: column; font-size: 0.82rem; line-height: 1.3; padding-inline: 0.2rem; }
+.fluxo__texto small { color: var(--texto-suave); min-height: 1.2em; }
+.fluxo__etapa--futura .fluxo__texto { color: var(--texto-suave); }
+
+/* No celular a linha do tempo fica na vertical (RNF04) */
+@media (max-width: 760px) {
+  .fluxo { flex-direction: column; }
+  .fluxo__etapa { flex-direction: row; align-items: flex-start; text-align: left; gap: 0.9rem; min-height: 58px; }
+  .fluxo__etapa:not(:last-child)::after { top: 28px; left: 12.5px; width: 4px; height: calc(100% - 28px); }
+  .fluxo__texto { font-size: 0.95rem; }
+}
+
+/* ---------- Ondas (padrão gráfico) ---------- */
+.ondas {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--raio-g);
+  background-color: var(--rio-negro);
+  /* Grade pontilhada sutil sobre o fundo escuro */
+  background-image: radial-gradient(rgba(248, 243, 233, 0.16) 1px, transparent 1.5px);
+  background-size: 22px 22px;
+}
+.ondas__faixas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* ---------- Cabeçalho ---------- */
+.cabecalho { position: sticky; top: 0; z-index: 10; background: var(--papel); border-bottom: 1px solid var(--borda); }
+.cabecalho__interno { display: flex; align-items: center; justify-content: space-between; min-height: 72px; gap: 1rem; }
+.cabecalho__logo { text-decoration: none; }
+.cabecalho__menu { display: flex; align-items: center; gap: 1.6rem; }
+.cabecalho__menu a:not(.botao) { text-decoration: none; font-size: 0.95rem; }
+.cabecalho__menu a:not(.botao):hover,
+.cabecalho__menu a.active { color: var(--por-do-sol); }
+.cabecalho__usuario { display: inline-flex; align-items: center; gap: 0.8rem; font-size: 0.95rem; }
+.cabecalho__menu-botao { display: none; }
+
+@media (max-width: 860px) {
+  .cabecalho__menu-botao {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--rio-negro);
+    border-radius: var(--raio-m);
+    background: none;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  /* Menu vira uma lista que cai embaixo do cabeçalho */
+  .cabecalho__menu {
+    display: none;
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: var(--papel);
+    border-bottom: 1px solid var(--borda);
+  }
+  .cabecalho__menu--aberto { display: flex; }
+}
+
+/* ---------- Rodapé ---------- */
+.rodape { background: var(--rio-negro); color: var(--papel); padding-top: 3rem; margin-top: 4rem; }
+.rodape__interno { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2rem; }
+.rodape__slogan { margin-top: 0.8rem; color: var(--solimoes); }
+.rodape__aviso { max-width: 42ch; font-size: 0.9rem; color: #d9d0c0; }
+.rodape__direitos { padding-block: 2rem 1.5rem; font-size: 0.85rem; color: #b8ad9a; }
+
+/* ---------- Layout ---------- */
+.layout { min-height: 100vh; display: flex; flex-direction: column; }
+.layout__conteudo { flex: 1; }
+.layout__conteudo > .container { padding-block: 2.5rem; }
+
+.pular-para-conteudo { position: absolute; left: -999px; top: 0; padding: 0.6rem 1rem; background: var(--rio-negro); color: var(--papel); z-index: 20; }
+.pular-para-conteudo:focus { left: 0; }
+
+/* ---------- Formulários (usados em login e nova solicitação) ---------- */
+.campo { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1.1rem; }
+.campo label, .campo legend { font-weight: 700; font-size: 0.95rem; }
+.campo small { color: var(--texto-suave); }
+.campo input[type='text'],
+.campo input[type='email'],
+.campo input[type='password'],
+.campo select,
+.campo textarea {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border: 1.5px solid var(--borda);
+  border-radius: var(--raio-p);
+  background: var(--branco);
+  font: inherit;
+  color: inherit;
+}
+.campo textarea { min-height: 140px; resize: vertical; }
+.campo input:focus, .campo select:focus, .campo textarea:focus { outline: 3px solid var(--por-do-sol-claro); border-color: var(--por-do-sol); }
+.campo--erro input, .campo--erro select, .campo--erro textarea { border-color: #b3402a; }
+.erro { color: #b3402a; font-size: 0.9rem; font-weight: 700; }
+
+/* ---------- Cartão genérico ---------- */
+.cartao { background: var(--branco); border: 1px solid var(--borda); border-radius: var(--raio-g); padding: 1.5rem; }
+.cartao > h2, .cartao > h3 { margin-bottom: 0.8rem; font-size: 1.1rem; }
