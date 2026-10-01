@@ -1,15 +1,18 @@
 import { Router } from 'express';
 import { listarArquivos, criar } from '../controllers/arquivosController.js';
+import { upload } from '../config/upload.js';
 
 // -----------------------------------------------------------------------------
 // ROTAS DE ARQUIVOS
 // -----------------------------------------------------------------------------
-// Aqui ficam os endpoints para anexar documentos ou comprovantes da solicitação.
+// Os documentos e comprovantes ficam em disco para não sobrecarregar o banco.
+// A rota aceita tanto JSON quanto multipart/form-data para manter compatibilidade
+// com testes antigos e com o fluxo de upload real do front.
 // -----------------------------------------------------------------------------
 
 const router = Router();
 
 router.get('/solicitacoes/:id/arquivos', listarArquivos);
-router.post('/solicitacoes/:id/arquivos', criar);
+router.post('/solicitacoes/:id/arquivos', upload.single('arquivo'), criar);
 
 export default router;

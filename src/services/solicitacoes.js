@@ -1,10 +1,19 @@
-/* =====================================================================
-   DADOS DE EXEMPLO (MOCK)
-   Ainda não há back-end, então estas solicitações fingem ser a resposta
-   de uma API. Quando a API existir, troque o uso desta lista por chamadas
-   com fetch() e apague este arquivo.
-   ===================================================================== */
-export const SOLICITACOES = [
+import { apiFetch } from './api.js';
+import { getServicoByBackendId } from './servicos.js';
+
+const STATUS_MAP = {
+  RECEBIDA: 'recebida',
+  EM_ANALISE: 'em_analise',
+  PROPOSTA_ENVIADA: 'proposta_enviada',
+  AGUARDANDO_PAGAMENTO: 'aguardando_pagamento',
+  PAGAMENTO_CONFIRMADO: 'pagamento_confirmado',
+  EM_ANDAMENTO: 'em_andamento',
+  CONCLUIDA: 'concluida',
+  RECUSADA: 'recusada',
+  CANCELADA: 'cancelada',
+};
+
+const SOLICITACOES_FALLBACK = [
   {
     id: '0231',
     titulo: 'TCC · Enfermagem',
@@ -14,7 +23,6 @@ export const SOLICITACOES = [
     valor: 180,
     entregaPrevista: '16/10',
     pagamento: 'Pix',
-    // Data em que cada etapa aconteceu (aparece embaixo do nome da etapa)
     datas: {
       recebida: '12/10',
       em_analise: '13/10',
@@ -24,59 +32,95 @@ export const SOLICITACOES = [
       em_andamento: '14/10',
       concluida: 'previsto 16/10',
     },
-    // RF08 e RF14: conversa entre cliente e equipe dentro da solicitação
     comentarios: [
       { autor: 'equipe', texto: 'Recebemos seu arquivo. Falta só a folha de aprovação assinada.', quando: '13/10' },
       { autor: 'cliente', texto: 'Enviei agora pouco, obrigada!', quando: '13/10' },
     ],
   },
-  {
-    id: '0232',
-    titulo: 'Artigo para periódico',
-    servico: 'revisao',
-    norma: 'ABNT NBR 6022',
-    status: 'proposta_enviada',
-    valor: 120,
-    entregaPrevista: '22/10',
-    pagamento: 'Pix',
-    datas: { recebida: '15/10', em_analise: '16/10', proposta_enviada: '16/10' },
-    comentarios: [],
-  },
-  {
-    id: '0233',
-    titulo: 'Relatório de estágio',
-    servico: 'criacao',
-    norma: 'Norma da instituição',
-    status: 'recebida',
-    valor: null, // ainda não há proposta
-    entregaPrevista: null,
-    pagamento: 'Pix',
-    datas: { recebida: '18/10' },
-    comentarios: [],
-  },
-  {
-    id: '0198',
-    titulo: 'Monografia · Administração',
-    servico: 'padronizacao',
-    norma: 'ABNT NBR 14724',
-    status: 'concluida',
-    valor: 220,
-    entregaPrevista: '02/09',
-    pagamento: 'Pix',
-    datas: {
-      recebida: '25/08',
-      em_analise: '25/08',
-      proposta_enviada: '26/08',
-      aguardando_pagamento: '26/08',
-      pagamento_confirmado: '27/08',
-      em_andamento: '27/08',
-      concluida: '02/09',
-    },
-    comentarios: [{ autor: 'equipe', texto: 'Concluída! Seu trabalho está pronto para a banca.', quando: '02/09' }],
-  },
 ];
 
-/** Procura uma solicitação pelo número. Retorna undefined se não existir. */
+export let SOLICITACOES = [...SOLICITACOES_FALLBACK];
+
+function normalizarStatus(status) {
+  return STATUS_MAP[String(status || '').toUpperCase()] || 'recebida';
+}
+
+function normalizarSolicitacao(solicitacao) {
+  const servicoId = solicitacao.servicoId ?? solicitacao.servico_id ?? solicitacao.servico;
+  const servico = getServicoByBackendId(servicoId)?.id || solicitacao.servico || 'criacao';
+
+  return {
+    id: String(solicitacao.id),
+    protocolo: solicitacao.protocolo || `ARR-${solicitacao.id}`,
+    titulo: solicitacao.titulo || 'Solicitação',
+    servico,
+    norma: solicitacao.norma || 'ABNT',
+    status: normalizarStatus(solicitacao.status),
+    valor: solicitacao.valor ?? null,
+    entregaPrevista: solicitacao.entregaPrevista || null,
+    pagamento: solicitacao.metodoPagamento || 'PIX',
+    datas: {},
+    comentarios: [],
+    raw: solicitacao,
+  };
+}
+
+export async function fetchSolicitacoes() {
+  try {
+    const dados = await apiFetch('/solicitacoes');
+    if (Array.isArray(dados)) {
+      SOLICITACOES = dados.map(normalizarSolicitacao);
+      return SOLICITACOES;
+    }
+  } catch (error) {
+    console.warn('Falha ao carregar solicitações da API. Usando fallback local.', error.message);
+  }
+
+  SOLICITACOES = [...SOLICITACOES_FALLBACK];
+  return SOLICITACOES;
+}
+
+export async function fetchSolicitacao(id) {
+  try {
+    const dados = await apiFetch(`/solicitacoes/${id}`);
+    return normalizarSolicitacao(dados);
+  } catch (error) {
+    console.warn('Falha ao carregar solicitação da API.', error.message);
+    return SOLICITACOES.find((s) => s.id === String(id));
+  }
+}
+
+export async function criarSolicitacao(payload) {
+  const resposta = await apiFetch('/solicitacoes', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+
+  const nova = normalizarSolicitacao(resposta.data || resposta);
+  SOLICITACOES = [nova, ...SOLICITACOES];
+  return nova;
+}
+
+export async function uploadArquivoSolicitacao(id, arquivo, tipo = 'DOCUMENTO') {
+  const formData = new FormData();
+  formData.append('arquivo', arquivo);
+  formData.append('tipo', tipo);
+
+  return apiFetch(`/solicitacoes/${id}/arquivos`, {
+    method: 'POST',
+    body: formData,
+  });
+}
+
+export async function adicionarComentarioSolicitacao(id, mensagem, autorTipo = 'CLIENTE') {
+  const resposta = await apiFetch(`/solicitacoes/${id}/comentarios`, {
+    method: 'POST',
+    body: JSON.stringify({ mensagem, autorTipo }),
+  });
+
+  return resposta.data || resposta;
+}
+
 export function getSolicitacao(id) {
-  return SOLICITACOES.find((s) => s.id === id);
+  return SOLICITACOES.find((s) => s.id === String(id));
 }

@@ -32,6 +32,34 @@ Desenvolver uma plataforma web onde clientes possam solicitar, de forma simples,
 
 ---
 
+## Fluxo da aplicação
+
+A sequência correta do projeto é importante para não misturar etapas de cliente, equipe e pagamento.
+
+### Fluxo principal
+
+1. Cliente entra no site e cria a solicitação.
+2. Solicitação fica com status `RECEBIDA`.
+3. A equipe/admin analisa o pedido.
+4. A equipe envia a proposta e a solicitação avança para `PROPOSTA_ENVIADA`.
+5. Cliente aceita ou recusa a proposta.
+6. Se aceita, entra em `AGUARDANDO_PAGAMENTO`.
+7. Cliente envia o comprovante de pagamento.
+8. O admin confirma e a solicitação avança para `PAGAMENTO_CONFIRMADO`.
+9. O trabalho entra em `EM_ANDAMENTO`.
+10. O projeto é concluído com `CONCLUIDA`.
+
+### Status finais
+
+- `RECUSADA`
+- `CANCELADA`
+
+Esses status encerram a solicitação sem seguir o fluxo normal.
+
+### Importante
+
+A parte administrativa é a etapa que libera o restante do fluxo. Antes do admin receber e analisar o pedido, não faz sentido testar proposta, pagamento e acompanhamento real do cliente em profundidade.
+
 ##  Equipe
 
 | Nome | GitHub |

@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Botao from '../../components/Botao';
 import Icone from '../../components/Icone';
-import { SERVICOS } from '../../services/servicos';
+import { fetchServicos, getServicoBackendId, SERVICOS } from '../../services/servicos';
+import { criarSolicitacao, uploadArquivoSolicitacao } from '../../services/solicitacoes';
 import { formatarTamanho } from '../../utils/formatar';
 
 /* =====================================================================
@@ -21,6 +22,7 @@ export default function NovaSolicitacao() {
   const [params] = useSearchParams();
   const servicoInicial = SERVICOS.some((s) => s.id === params.get('servico')) ? params.get('servico') : '';
 
+  const [listaServicos, setListaServicos] = useState(SERVICOS);
   const [servico, setServico] = useState(servicoInicial);
   const [titulo, setTitulo] = useState('');
   const [norma, setNorma] = useState(NORMAS[0]);
@@ -28,6 +30,10 @@ export default function NovaSolicitacao() {
   const [arquivos, setArquivos] = useState([]);
   const [erros, setErros] = useState({});
   const [enviada, setEnviada] = useState(false);
+
+  useEffect(() => {
+    fetchServicos().then(setListaServicos).catch(() => setListaServicos(SERVICOS));
+  }, []);
 
   /** Confere cada arquivo escolhido e separa os aceitos dos recusados. */
   function aoEscolherArquivos(evento) {
@@ -53,7 +59,7 @@ export default function NovaSolicitacao() {
 
   const removerArquivo = (indice) => setArquivos(arquivos.filter((_, i) => i !== indice));
 
-  function aoEnviar(evento) {
+  async function aoEnviar(evento) {
     evento.preventDefault();
     const e = {};
     if (!servico) e.servico = 'Escolha o tipo de serviço.';
@@ -63,10 +69,26 @@ export default function NovaSolicitacao() {
     setErros(e);
     if (Object.keys(e).length > 0) return;
 
-    // TODO: enviar para a API com FormData (campos + arquivos), ex.:
-    // const corpo = new FormData(); corpo.append('titulo', titulo); arquivos.forEach(a => corpo.append('arquivos', a));
-    // await fetch('/api/solicitacoes', { method: 'POST', body: corpo });
-    setEnviada(true);
+    try {
+      const payload = {
+        servicoId: getServicoBackendId(servico),
+        titulo: titulo.trim(),
+        norma,
+        descricao: descricao.trim(),
+      };
+
+      const solicitacao = await criarSolicitacao(payload);
+
+      if (arquivos.length > 0) {
+        await Promise.all(
+          arquivos.map((arquivo) => uploadArquivoSolicitacao(solicitacao.id, arquivo, 'DOCUMENTO')),
+        );
+      }
+
+      setEnviada(true);
+    } catch (error) {
+      setErros({ geral: error.message || 'Não foi possível enviar a solicitação.' });
+    }
   }
 
   // ----- Tela de confirmação, depois de enviar -----
@@ -90,10 +112,12 @@ export default function NovaSolicitacao() {
 
       <form onSubmit={aoEnviar} noValidate>
         {/* --- 1. Tipo de serviço --- */}
+        {erros.geral && <p className="erro">{erros.geral}</p>}
+
         <fieldset className={`campo ${erros.servico ? 'campo--erro' : ''}`}>
           <legend>1. O que você precisa?</legend>
           <div className="opcoes">
-            {SERVICOS.map((s) => (
+            {listaServicos.map((s) => (
               <label key={s.id} className={`opcao ${servico === s.id ? 'opcao--marcada' : ''}`}>
                 <input type="radio" name="servico" value={s.id} checked={servico === s.id} onChange={() => setServico(s.id)} />
                 <Icone nome={s.icone} />

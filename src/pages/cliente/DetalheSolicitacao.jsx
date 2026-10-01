@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Botao from '../../components/Botao';
 import StatusBadge from '../../components/StatusBadge';
 import LinhaDoTempo from '../../components/LinhaDoTempo';
-import { getSolicitacao } from '../../services/solicitacoes';
+import { adicionarComentarioSolicitacao, fetchSolicitacao, getSolicitacao, SOLICITACOES } from '../../services/solicitacoes';
 import { getServico } from '../../services/servicos';
 import { estaEncerrada } from '../../utils/status';
 import { formatarMoeda } from '../../utils/formatar';
@@ -23,15 +23,25 @@ import { formatarMoeda } from '../../utils/formatar';
 const CHAVE_PIX = 'pagamentos@arrumai.com.br';
 
 export default function DetalheSolicitacao() {
-  const { id } = useParams(); // pega o "0231" de /solicitacao/0231
-  const original = getSolicitacao(id);
+  const { id } = useParams();
+  const [original, setOriginal] = useState(getSolicitacao(id) || null);
 
-  // Estados que mudam conforme a cliente age nesta tela
+  useEffect(() => {
+    fetchSolicitacao(id)
+      .then((solicitacao) => setOriginal(solicitacao))
+      .catch(() => setOriginal(SOLICITACOES.find((s) => s.id === String(id)) || null));
+  }, [id]);
+
   const [status, setStatus] = useState(original?.status);
-  const [comprovante, setComprovante] = useState(null);   // nome do arquivo enviado
+  const [comprovante, setComprovante] = useState(null);
   const [comentarios, setComentarios] = useState(original?.comentarios ?? []);
   const [novoComentario, setNovoComentario] = useState('');
   const [copiado, setCopiado] = useState(false);
+
+  useEffect(() => {
+    setStatus(original?.status);
+    setComentarios(original?.comentarios ?? []);
+  }, [original]);
 
   // Número inexistente na URL: avisa e oferece o caminho de volta
   if (!original) {
@@ -58,12 +68,18 @@ export default function DetalheSolicitacao() {
   }
 
   /** Adiciona o comentário na conversa (RF08). */
-  function enviarComentario(evento) {
+  async function enviarComentario(evento) {
     evento.preventDefault();
     if (!novoComentario.trim()) return;
-    // TODO: POST /solicitacoes/:id/comentarios
-    setComentarios([...comentarios, { autor: 'cliente', texto: novoComentario.trim(), quando: 'agora' }]);
-    setNovoComentario('');
+
+    try {
+      await adicionarComentarioSolicitacao(id, novoComentario.trim(), 'CLIENTE');
+      const atualizado = await fetchSolicitacao(id);
+      setOriginal(atualizado);
+      setNovoComentario('');
+    } catch (error) {
+      console.error('Erro ao enviar comentário', error);
+    }
   }
 
   // Cada bloco abaixo é o que aparece no cartão de "Proposta" para cada status

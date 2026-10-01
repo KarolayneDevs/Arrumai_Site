@@ -1,7 +1,8 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Botao from '../../components/Botao';
 import StatusBadge from '../../components/StatusBadge';
-import { SOLICITACOES } from '../../services/solicitacoes';
+import { fetchSolicitacoes, SOLICITACOES } from '../../services/solicitacoes';
 import { getServico } from '../../services/servicos';
 import { formatarMoeda } from '../../utils/formatar';
 
@@ -10,8 +11,11 @@ import { formatarMoeda } from '../../utils/formatar';
    Lista todas as solicitações da cliente, cada uma com selo de status.
    ===================================================================== */
 export default function MinhasSolicitacoes() {
-  // TODO: buscar da API (GET /solicitacoes) só as solicitações da pessoa logada.
-  const lista = SOLICITACOES;
+  const [lista, setLista] = useState(SOLICITACOES);
+
+  useEffect(() => {
+    fetchSolicitacoes().then(setLista).catch(() => setLista(SOLICITACOES));
+  }, []);
 
   return (
     <div className="container">

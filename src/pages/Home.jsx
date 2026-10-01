@@ -1,8 +1,9 @@
+import { useEffect, useState } from 'react';
 import Botao from '../components/Botao';
 import Ondas from '../components/Ondas';
 import { Simbolo } from '../components/Logo';
 import Icone from '../components/Icone';
-import { SERVICOS } from '../services/servicos';
+import { fetchServicos, SERVICOS } from '../services/servicos';
 
 /* =====================================================================
    PÁGINA INICIAL (mockups 05 e 06 do guia)
@@ -26,6 +27,12 @@ const PASSOS = [
 ];
 
 export default function Home() {
+  const [servicos, setServicos] = useState(SERVICOS);
+
+  useEffect(() => {
+    fetchServicos().then(setServicos).catch(() => setServicos(SERVICOS));
+  }, []);
+
   return (
     <>
       {/* ---------- 1. DESTAQUE (hero) ---------- */}
@@ -97,7 +104,7 @@ export default function Home() {
       <section id="servicos" className="container secao">
         <h2>O que fazemos</h2>
         <div className="grade grade--3">
-          {SERVICOS.map((s) => (
+          {servicos.map((s) => (
             <article key={s.id} className="cartao servico">
               <Icone nome={s.icone} tamanho={30} />
               <h3>{s.nome}</h3>

@@ -9,13 +9,14 @@
     "test": "echo \"No tests yet. Add tests later for services and routes.\" && exit 0"
   },
   "keywords": [],
-  "author": "",
+  "author": "ARRUMAI",
   "license": "ISC",
-  "description": "",
+  "description": "Backend da API do ARRUMAI para gerenciamento de solicitações, propostas, pagamentos e arquivos.",
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^18.0.5",
     "express": "^5.2.1",
+    "multer": "^2.4.0",
     "mysql2": "^3.24.5"
   }
 }

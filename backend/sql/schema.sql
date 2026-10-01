@@ -2,12 +2,20 @@
 -- SCHEMA DO BANCO ARRUMAI
 -- -----------------------------------------------------------------------------
 -- Este script representa a base funcional do projeto para a primeira etapa.
--- Ele cobre os módulos principais do site sem incluir o login/cadastro.
+-- Ele cobre os módulos principais do site sem incluir login/cadastro.
+-- A ideia é manter o banco enxuto e fácil de acompanhar para a equipe continuar
+-- o desenvolvimento sem ter que reconstruir a lógica do projeto do zero.
 -- -----------------------------------------------------------------------------
 
 CREATE DATABASE IF NOT EXISTS arrumai;
 USE arrumai;
 
+-- -----------------------------------------------------------------------------
+-- TABELA DE SERVIÇOS
+-- -----------------------------------------------------------------------------
+-- Lista os tipos de serviço disponíveis no site. O front usa esses dados para
+-- montar os cards, filtros e a tela de criação da solicitação.
+-- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS servicos (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
@@ -19,6 +27,12 @@ CREATE TABLE IF NOT EXISTS servicos (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- -----------------------------------------------------------------------------
+-- TABELA DE SOLICITAÇÕES
+-- -----------------------------------------------------------------------------
+-- Armazena a solicitação principal do cliente, incluindo o status atual, o valor
+-- e as informações do serviço solicitado.
+-- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS solicitacoes (
     id INT PRIMARY KEY AUTO_INCREMENT,
     protocolo VARCHAR(30) NOT NULL UNIQUE,
@@ -36,6 +50,12 @@ CREATE TABLE IF NOT EXISTS solicitacoes (
     FOREIGN KEY (servico_id) REFERENCES servicos(id)
 );
 
+-- -----------------------------------------------------------------------------
+-- HISTÓRICO DE STATUS
+-- -----------------------------------------------------------------------------
+-- Cada mudança de etapa da solicitação fica registrada aqui para permitir
+-- auditoria e facilitar a análise do processo pelo time.
+-- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS solicitacao_status_historico (
     id INT PRIMARY KEY AUTO_INCREMENT,
     solicitacao_id INT NOT NULL,
@@ -46,6 +66,12 @@ CREATE TABLE IF NOT EXISTS solicitacao_status_historico (
     FOREIGN KEY (solicitacao_id) REFERENCES solicitacoes(id)
 );
 
+-- -----------------------------------------------------------------------------
+-- ARQUIVOS DA SOLICITAÇÃO
+-- -----------------------------------------------------------------------------
+-- Os arquivos reais ficam salvos na pasta uploads/ e este banco guarda apenas
+-- metadados do documento, além do caminho de acesso.
+-- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS solicitacao_arquivos (
     id INT PRIMARY KEY AUTO_INCREMENT,
     solicitacao_id INT NOT NULL,
@@ -59,6 +85,12 @@ CREATE TABLE IF NOT EXISTS solicitacao_arquivos (
     FOREIGN KEY (solicitacao_id) REFERENCES solicitacoes(id)
 );
 
+-- -----------------------------------------------------------------------------
+-- PROPOSTAS
+-- -----------------------------------------------------------------------------
+-- A equipe pode enviar uma proposta vinculada à solicitação para validar valor,
+-- prazo e observações antes do pagamento.
+-- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS propostas (
     id INT PRIMARY KEY AUTO_INCREMENT,
     solicitacao_id INT NOT NULL,
@@ -71,6 +103,12 @@ CREATE TABLE IF NOT EXISTS propostas (
     FOREIGN KEY (solicitacao_id) REFERENCES solicitacoes(id)
 );
 
+-- -----------------------------------------------------------------------------
+-- PAGAMENTOS
+-- -----------------------------------------------------------------------------
+-- Registra o pagamento e o comprovante vinculado ao pedido. O status desta
+-- tabela segue a etapa de confirmação antes da continuidade do serviço.
+-- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS pagamentos (
     id INT PRIMARY KEY AUTO_INCREMENT,
     solicitacao_id INT NOT NULL,
@@ -87,6 +125,11 @@ CREATE TABLE IF NOT EXISTS pagamentos (
     FOREIGN KEY (proposta_id) REFERENCES propostas(id)
 );
 
+-- -----------------------------------------------------------------------------
+-- COMENTÁRIOS
+-- -----------------------------------------------------------------------------
+-- Mantém o histórico de conversa entre cliente e equipe sobre a solicitação.
+-- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS solicitacao_comentarios (
     id INT PRIMARY KEY AUTO_INCREMENT,
     solicitacao_id INT NOT NULL,
@@ -97,6 +140,12 @@ CREATE TABLE IF NOT EXISTS solicitacao_comentarios (
     FOREIGN KEY (solicitacao_id) REFERENCES solicitacoes(id)
 );
 
+-- -----------------------------------------------------------------------------
+-- DADOS INICIAIS
+-- -----------------------------------------------------------------------------
+-- Isso deixa a base pronta para o front e para os testes iniciais sem exigir
+-- criação manual de serviços toda vez que o ambiente for montado.
+-- -----------------------------------------------------------------------------
 INSERT INTO servicos (nome, slug, icon, descricao, ativo, ordem) VALUES
 ('Criação', 'criacao', 'documento', 'Documentação montada do zero.', TRUE, 1),
 ('Revisão', 'revisao', 'aprovacao', 'Correção e revisão de documento existente.', TRUE, 2),
