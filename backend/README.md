@@ -30,6 +30,14 @@ Este diretório concentra a API do projeto ARRUMAI para a primeira fase funciona
 - POST /api/solicitacoes/:id/comentarios
 - GET /api/solicitacoes/:id/comentarios
 - GET /api/solicitacoes/:id/historico
+- GET /api/solicitacoes/:id/propostas
+- POST /api/solicitacoes/:id/propostas
+- PATCH /api/propostas/:id/status
+- GET /api/solicitacoes/:id/pagamentos
+- POST /api/solicitacoes/:id/pagamentos
+- PATCH /api/pagamentos/:id/status
+- GET /api/solicitacoes/:id/arquivos
+- POST /api/solicitacoes/:id/arquivos
 
 ## Observação importante
 

@@ -99,6 +99,19 @@ export const memoryStore = {
       dataHora: new Date().toISOString(),
     },
   ],
+  arquivos: [
+    {
+      id: 1,
+      solicitacaoId: 1,
+      tipo: 'DOCUMENTO',
+      nomeOriginal: 'modelo-tcc.pdf',
+      nomeArmazenado: 'documento-1.pdf',
+      caminho: '/uploads/documento-1.pdf',
+      mimeType: 'application/pdf',
+      tamanhoBytes: 245760,
+      dataHora: new Date().toISOString(),
+    },
+  ],
   propostas: [
     {
       id: 1,
@@ -108,6 +121,7 @@ export const memoryStore = {
       observacao: 'Proposta inicial com revisão final.',
       status: 'ACEITA',
       dataEnvio: new Date().toISOString(),
+      dataResposta: new Date().toISOString(),
     },
   ],
   pagamentos: [
@@ -118,6 +132,7 @@ export const memoryStore = {
       valor: 180,
       metodo: 'PIX',
       status: 'CONFIRMADO',
+      comprovanteId: 1,
       dataComprovante: new Date().toISOString(),
       dataConferencia: new Date().toISOString(),
       motivoRecusa: null,
