@@ -54,8 +54,12 @@ export default function Login() {
 
     entrar({ nome: email.split('@')[0], email, papel });
 
-    // Equipe vai para o painel; cliente volta para onde estava ou para a lista
-    const destino = papel === 'admin' ? '/admin' : local.state?.de ?? '/minhas-solicitacoes';
+    // A equipe vai para o painel; cliente não deve retornar a uma rota exclusiva da equipe.
+    const destino = papel === 'admin'
+      ? '/admin'
+      : local.state?.de && !local.state.de.startsWith('/admin')
+        ? local.state.de
+        : '/';
     navegar(destino, { replace: true });
   }
 

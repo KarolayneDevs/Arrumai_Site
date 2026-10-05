@@ -83,9 +83,12 @@ Essa ordem deve ser seguida para que o fluxo do sistema fique consistente e os s
 - PATCH /api/pagamentos/:id/status
 - GET /api/solicitacoes/:id/arquivos
 - POST /api/solicitacoes/:id/arquivos
+- GET /api/arquivos/:id/visualizar
 
 ## Observação importante
 
-Neste momento, o backend usa armazenamento em memória por padrão para permitir testes locais sem depender do MySQL. Quando o ambiente do banco estiver pronto, basta preencher as variáveis do `.env` e ativar a conexão real.
+Neste momento, os serviços de negócio usam `memoryStore`, inclusive quando as variáveis do MySQL estão configuradas. `GET /api/health` testa a conexão, mas não comprova persistência dos pedidos. Reiniciar a API apaga pedidos, propostas, pagamentos, comentários e metadados mantidos em memória. A integração dos serviços com as tabelas ainda precisa ser feita.
 
-A regra para anexos também foi pensada para não sobrecarregar o banco: arquivos reais ficam na pasta `uploads/`, enquanto apenas os metadados e o caminho ficam salvos no banco.
+Arquivos reais ficam em `uploads/`; o serviço atualmente mantém seus metadados em memória, não no MySQL. A pasta é ignorada pelo Git para evitar publicar documentos privados. Consulte `../docs/fluxo-do-projeto.md` para o fluxo de anexos e o trecho que monta o link de visualização.
+
+O servidor de desenvolvimento usa `node --watch`; alterações em arquivos de `backend/src/` reiniciam a API e limpam o `memoryStore`. Não edite/reinicie o backend durante testes que precisem manter dados até a persistência no banco estar pronta.

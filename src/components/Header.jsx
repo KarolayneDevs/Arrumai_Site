@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Logo from './Logo';
 import Botao from './Botao';
@@ -12,12 +12,17 @@ import Botao from './Botao';
 export default function Header() {
   // useState guarda se o menu do celular está aberto (true) ou fechado (false)
   const [menuAberto, setMenuAberto] = useState(false);
+  const [contaAberta, setContaAberta] = useState(false);
   // usuario é null quando ninguém está logado
   const { usuario, sair } = useAuth();
+  const navegar = useNavigate();
   // A equipe e as administradoras ganham um link extra para o painel
   const ehEquipe = ['admin', 'equipe'].includes(usuario?.papel);
-  // Fecha o menu depois de clicar em qualquer link (só faz diferença no celular)
-  const fechar = () => setMenuAberto(false);
+  // Fecha o menu móvel e a caixa do e-mail após navegação ou logout.
+  const fechar = () => {
+    setMenuAberto(false);
+    setContaAberta(false);
+  };
 
   return (
     <header className="cabecalho">
@@ -48,13 +53,29 @@ export default function Header() {
               trabalho vem na proposta, então esse item ficou de fora. */}
           <a href="/#como-funciona" onClick={fechar}>Como funciona</a>
           <a href="/#servicos" onClick={fechar}>Serviços</a>
-          <NavLink to="/minhas-solicitacoes" onClick={fechar}>Acompanhar</NavLink>
+          {!ehEquipe && <NavLink to="/minhas-solicitacoes" onClick={fechar}>Acompanhar</NavLink>}
           {ehEquipe && <NavLink to="/admin" onClick={fechar}>Painel da equipe</NavLink>}
           {usuario ? (
             // Logada: mostra o nome e um botão para sair
             <span className="cabecalho__usuario">
-              <span>Olá, {usuario.nome.split(' ')[0]}</span>
-              <button type="button" className="botao botao--texto" onClick={() => { sair(); fechar(); }}>
+              {/* Mostra o e-mail da sessão sem ocupar espaço fixo no cabeçalho. */}
+              <span className="cabecalho__conta">
+                <button
+                  type="button"
+                  className="cabecalho__conta-botao"
+                  aria-expanded={contaAberta}
+                  aria-controls="dados-conta"
+                  onClick={() => setContaAberta((aberta) => !aberta)}
+                >
+                  Olá, {usuario.nome.split(' ')[0]}
+                </button>
+                {contaAberta && (
+                  <span id="dados-conta" className="cabecalho__conta-caixa" role="status">
+                    {usuario.email}
+                  </span>
+                )}
+              </span>
+              <button type="button" className="botao botao--texto" onClick={() => { sair(); fechar(); navegar('/'); }}>
                 Sair
               </button>
             </span>

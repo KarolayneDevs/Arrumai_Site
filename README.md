@@ -58,7 +58,11 @@ Esses status encerram a solicitação sem seguir o fluxo normal.
 
 ### Importante
 
-A parte administrativa é a etapa que libera o restante do fluxo. Antes do admin receber e analisar o pedido, não faz sentido testar proposta, pagamento e acompanhamento real do cliente em profundidade.
+A equipe administra os pedidos pelo painel. A interface de acompanhamento do cliente existe, mas o backend ainda não vincula pedidos a contas: enquanto autenticação e autorização não forem implementadas, a API não isola os dados por cliente e não deve ser usada com documentos reais.
+
+### Arquivos e documento final
+
+Documentos de trabalho, comprovantes e entregas finais são salvos localmente em `backend/uploads/`; essa pasta está fora do Git por conter arquivos privados. O banco deve guardar somente os metadados e o vínculo com a solicitação. O funcionamento do link de visualização e a sequência completa estão descritos em [docs/fluxo-do-projeto.md](docs/fluxo-do-projeto.md).
 
 ##  Equipe
 
@@ -67,4 +71,4 @@ A parte administrativa é a etapa que libera o restante do fluxo. Antes do admin
 | ALICE QUELY TEIXEIRA SOMBRA - back | [@quely78](https://github.com/quely78) |
 | KAROLAYNE DINIZ - banco de dados | [@KarolayneDevs](https://github.com/KarolayneDevs) |
 | MARIA LUANA PINHEIRO MARAES - front | 
-| MARIA HELENA MOTA CAMPOS - front | [@mariahelenamotta](https://github.com/mariahelenamotta)) |
+| MARIA HELENA MOTA CAMPOS - front | [@mariahelenamotta](https://github.com/mariahelenamotta) |

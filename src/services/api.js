@@ -1,4 +1,9 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
+// A mesma base serve as chamadas fetch e os links diretos para abrir arquivos.
+export const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
+
+export function apiUrl(path) {
+  return `${API_BASE}${path}`;
+}
 
 export async function apiFetch(path, options = {}) {
   const headers = { ...(options.headers || {}) };
@@ -8,7 +13,7 @@ export async function apiFetch(path, options = {}) {
     headers['Content-Type'] = 'application/json';
   }
 
-  const response = await fetch(`${API_BASE}${path}`, {
+  const response = await fetch(apiUrl(path), {
     ...options,
     headers,
     body: options.body,

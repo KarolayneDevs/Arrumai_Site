@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Botao from '../../components/Botao';
 import StatusBadge from '../../components/StatusBadge';
-import { listarSolicitacoesAdmin, mensagemDeErro } from '../../services/admin';
+import { listarSolicitacoesAdmin, mensagemDeErro, usandoDemonstracao } from '../../services/admin';
 import { formatarData } from '../../utils/datas';
 import { formatarMoeda } from '../../utils/formatar';
 import '../../styles/admin.css';
@@ -69,6 +69,12 @@ export default function PainelAdmin() {
           {carregando ? 'Atualizando...' : 'Atualizar lista'}
         </Botao>
       </div>
+
+      {usandoDemonstracao() && (
+        <p className="aviso" role="status">
+          Demonstração sem banco: os dados exibidos são exemplos e não ficam salvos.
+        </p>
+      )}
 
       {/* Abas de filtro */}
       <div className="abas" role="tablist" aria-label="Filtrar solicitações">

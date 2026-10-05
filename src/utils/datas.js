@@ -4,10 +4,13 @@
    Estas funções transformam em texto fácil de ler, no horário local.
    ===================================================================== */
 
-/** formatarData("2026-10-05T14:30:00Z") -> "05/10/2026". Sem data, mostra um traço. */
+/** Formata ISO ou YYYY-MM-DD sem deslocar datas sem horário por fuso local. */
 export function formatarData(iso) {
   if (!iso) return '—';
-  const data = new Date(iso);
+  const somenteData = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso));
+  const data = somenteData
+    ? new Date(Number(somenteData[1]), Number(somenteData[2]) - 1, Number(somenteData[3]))
+    : new Date(iso);
   if (Number.isNaN(data.getTime())) return String(iso); // não é uma data válida: mostra como veio
   return data.toLocaleDateString('pt-BR');
 }

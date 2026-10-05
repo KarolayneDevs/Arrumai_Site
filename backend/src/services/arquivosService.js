@@ -3,6 +3,8 @@ import path from 'path';
 import { memoryStore } from '../config/database.js';
 import { buscarSolicitacaoPorId } from './solicitacoesService.js';
 
+const uploadRoot = path.resolve(process.cwd(), 'uploads');
+
 // -----------------------------------------------------------------------------
 // SERVIÇO DE ARQUIVOS
 // -----------------------------------------------------------------------------
@@ -16,6 +18,23 @@ export async function listarArquivosPorSolicitacao(id) {
   return memoryStore.arquivos.filter((arquivo) => arquivo.solicitacaoId === solicitacaoId);
 }
 
+export async function buscarArquivoPorId(id) {
+  return memoryStore.arquivos.find((arquivo) => String(arquivo.id) === String(id));
+}
+
+export function resolverCaminhoArquivo(arquivo) {
+  const caminhoRelativo = String(arquivo.caminho || '').replace(/^[/\\]+/, '');
+  const caminhoAbsoluto = path.resolve(process.cwd(), caminhoRelativo);
+  const caminhoDentroDaPasta = path.relative(uploadRoot, caminhoAbsoluto);
+
+  if (!caminhoDentroDaPasta || caminhoDentroDaPasta === '..'
+    || caminhoDentroDaPasta.startsWith(`..${path.sep}`) || path.isAbsolute(caminhoDentroDaPasta)) {
+    throw new Error('Caminho do arquivo inválido.');
+  }
+
+  return caminhoAbsoluto;
+}
+
 export async function criarArquivo(solicitacaoId, dados = {}) {
   const solicitacao = await buscarSolicitacaoPorId(solicitacaoId);
 
@@ -26,7 +45,7 @@ export async function criarArquivo(solicitacaoId, dados = {}) {
   let tipo = String(dados.tipo || '').trim().toUpperCase();
   let nomeOriginal = String(dados.nomeOriginal || '').trim();
   let caminho = String(dados.caminho || '').trim();
-  let mimeType = String(dados.mimeType || 'application/octet-stream').trim();
+  let mimeType = String(dados.mimeType || dados.file?.mimetype || 'application/octet-stream').trim();
   let tamanhoBytes = Number(dados.tamanhoBytes || 0);
 
   const arquivoUpload = dados.file || null;

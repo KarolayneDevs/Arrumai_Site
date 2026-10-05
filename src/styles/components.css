@@ -124,6 +124,36 @@
 .cabecalho__menu a:not(.botao):hover,
 .cabecalho__menu a.active { color: var(--por-do-sol); }
 .cabecalho__usuario { display: inline-flex; align-items: center; gap: 0.8rem; font-size: 0.95rem; }
+.cabecalho__conta { position: relative; display: inline-flex; }
+.cabecalho__conta-botao {
+  padding: 0.25rem 0.35rem;
+  border: 0;
+  border-radius: var(--raio-p);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.cabecalho__conta-botao:hover,
+.cabecalho__conta-botao[aria-expanded='true'] { color: var(--por-do-sol); }
+.cabecalho__conta-caixa {
+  position: absolute;
+  z-index: 12;
+  top: calc(100% + 0.55rem);
+  left: 0;
+  width: max-content;
+  min-width: 12rem;
+  max-width: min(24rem, calc(100vw - 2rem));
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-m);
+  background: var(--branco);
+  color: var(--rio-negro);
+  box-shadow: var(--sombra);
+  overflow-wrap: anywhere;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
 .cabecalho__menu-botao { display: none; }
 
 @media (max-width: 860px) {

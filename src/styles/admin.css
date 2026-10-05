@@ -37,6 +37,13 @@
 .subtitulo { margin-block: 1.1rem 0.4rem; font-size: 0.95rem; color: var(--texto-suave); }
 .texto-pedido { white-space: pre-wrap; max-width: none; } /* respeita as quebras de linha que o cliente digitou */
 .nota { margin-top: 0.8rem; font-size: 0.85rem; color: var(--texto-suave); }
+/* Mantém as ações da entrega alinhadas e as empilha em telas estreitas. */
+.documento-final__acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-block: 1rem; }
+.documento-final__acoes .botao { flex: 1 1 12rem; max-width: 100%; text-align: center; white-space: normal; }
+@media (max-width: 540px) {
+  .documento-final__acoes { flex-direction: column; align-items: stretch; }
+  .documento-final__acoes .botao { width: 100%; }
+}
 
 /* ---------- Painel de decisão ---------- */
 .decisao { align-self: start; border-top: 6px solid var(--por-do-sol); }

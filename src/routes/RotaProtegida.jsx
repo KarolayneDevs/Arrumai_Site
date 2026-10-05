@@ -2,9 +2,9 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 /* =====================================================================
-   ROTA PROTEGIDA (RNF02: acesso só para quem está logada)
-   Se não houver usuário logado, manda para a tela de login e guarda a
-   página que ela queria abrir, para voltar para lá depois de entrar.
+  ROTA DO CLIENTE
+  Sem sessão, envia para o login e guarda o destino. Contas de equipe/admin
+  são encaminhadas ao painel, sem acesso às rotas de acompanhamento do cliente.
    ===================================================================== */
 export default function RotaProtegida() {
   const { usuario } = useAuth();
@@ -13,5 +13,10 @@ export default function RotaProtegida() {
   if (!usuario) {
     return <Navigate to="/entrar" state={{ de: local.pathname + local.search }} replace />;
   }
-  return <Outlet />; // logada: mostra a página normalmente
+
+  if (['admin', 'equipe'].includes(usuario.papel)) {
+    return <Navigate to="/admin" replace />;
+  }
+
+  return <Outlet />;
 }
