@@ -1,0 +1,61 @@
+/* =====================================================================
+   ESTILOS DA ÁREA DA EQUIPE (painel e análise de solicitações)
+   Reaproveita .cartao, .campo, .selo, .item-solicitacao etc. dos outros
+   arquivos de estilo; aqui ficam só as peças novas.
+   ===================================================================== */
+
+.lead--curto { margin-block: 0.3rem 0; }
+
+/* ---------- Abas de filtro ---------- */
+.abas { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.25rem; }
+.aba {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  border: 1.5px solid var(--borda); border-radius: 999px;
+  background: var(--branco); color: var(--rio-negro);
+  font: inherit; font-weight: 700; font-size: 0.92rem; cursor: pointer;
+}
+.aba:hover { border-color: var(--por-do-sol); }
+.aba--ativa { background: var(--rio-negro); border-color: var(--rio-negro); color: var(--papel); }
+.aba__contagem {
+  min-width: 1.5rem; padding: 0 0.4rem; border-radius: 999px;
+  background: var(--papel-escuro); color: var(--rio-negro);
+  font-size: 0.8rem; text-align: center;
+}
+.aba--ativa .aba__contagem { background: var(--por-do-sol); color: var(--branco); }
+
+/* Solicitação recém-recebida: faixa lateral chamativa */
+.item-solicitacao--nova { border-left: 6px solid var(--por-do-sol); }
+
+/* ---------- Mensagens ---------- */
+.aviso { margin-bottom: 1rem; }
+.aviso--erro { background: #f6e1db; border: 1px solid #d9a99c; color: #7a2a18; }
+
+/* ---------- Tela de análise ---------- */
+.admin__coluna { display: grid; gap: 1.25rem; align-content: start; }
+.admin__secao { margin-top: 1.25rem; }
+.subtitulo { margin-block: 1.1rem 0.4rem; font-size: 0.95rem; color: var(--texto-suave); }
+.texto-pedido { white-space: pre-wrap; max-width: none; } /* respeita as quebras de linha que o cliente digitou */
+.nota { margin-top: 0.8rem; font-size: 0.85rem; color: var(--texto-suave); }
+
+/* ---------- Painel de decisão ---------- */
+.decisao { align-self: start; border-top: 6px solid var(--por-do-sol); }
+.decisao__botoes { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; margin-block: 1rem; }
+.decisao__botoes .botao[aria-pressed='true'] { box-shadow: 0 0 0 3px var(--por-do-sol-claro); }
+.decisao__form { margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--borda); }
+.decisao__resumo { margin-top: 0.8rem; font-size: 1.15rem; }
+.decisao__alerta { margin-top: 0.8rem; font-size: 0.88rem; color: #7a2a18; }
+
+/* ---------- Listas simples (arquivos, propostas, pagamentos) ---------- */
+.lista-simples { display: grid; gap: 0; }
+.lista-simples li { padding-block: 0.75rem; border-bottom: 1px solid var(--borda); }
+.lista-simples li:last-child { border-bottom: 0; }
+.lista-simples small { color: var(--texto-suave); }
+.lista-simples .decisao__botoes { margin-block: 0.6rem 0; }
+
+/* ---------- Histórico ---------- */
+.historico { display: grid; gap: 0.9rem; border-left: 3px solid var(--borda); padding-left: 1.1rem; }
+.historico li { position: relative; }
+.historico li::before { content: ''; position: absolute; left: -1.62rem; top: 0.45rem; width: 11px; height: 11px; border-radius: 50%; background: var(--por-do-sol); }
+.historico small { color: var(--texto-suave); }
+.historico p { color: var(--texto-suave); }

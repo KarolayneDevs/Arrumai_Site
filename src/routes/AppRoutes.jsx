@@ -1,12 +1,15 @@
 import { Route, Routes } from 'react-router-dom';
 import Layout from '../components/Layout';
 import RotaProtegida from './RotaProtegida';
+import RotaAdmin from './RotaAdmin';
 import Home from '../pages/Home';
 import Login from '../pages/auth/Login';
 import Cadastro from '../pages/auth/Cadastro';
 import NovaSolicitacao from '../pages/cliente/NovaSolicitacao';
 import MinhasSolicitacoes from '../pages/cliente/MinhasSolicitacoes';
 import DetalheSolicitacao from '../pages/cliente/DetalheSolicitacao';
+import PainelAdmin from '../pages/admin/PainelAdmin';
+import AnalisarSolicitacao from '../pages/admin/AnalisarSolicitacao';
 import NaoEncontrada from '../pages/NaoEncontrada';
 
 /* =====================================================================
@@ -32,6 +35,12 @@ export default function AppRoutes() {
           <Route path="/solicitacao/:id" element={<DetalheSolicitacao />} />
         </Route>
 
+        {/* Só para a equipe e administradoras */}
+        <Route element={<RotaAdmin />}>
+          <Route path="/admin" element={<PainelAdmin />} />
+          <Route path="/admin/solicitacao/:id" element={<AnalisarSolicitacao />} />
+        </Route>
+        
         {/* "*" pega qualquer endereço que não existe */}
         <Route path="*" element={<NaoEncontrada />} />
       </Route>

@@ -14,7 +14,8 @@ export default function Header() {
   const [menuAberto, setMenuAberto] = useState(false);
   // usuario é null quando ninguém está logado
   const { usuario, sair } = useAuth();
-
+  // A equipe e as administradoras ganham um link extra para o painel
+  const ehEquipe = ['admin', 'equipe'].includes(usuario?.papel);
   // Fecha o menu depois de clicar em qualquer link (só faz diferença no celular)
   const fechar = () => setMenuAberto(false);
 
@@ -48,7 +49,7 @@ export default function Header() {
           <a href="/#como-funciona" onClick={fechar}>Como funciona</a>
           <a href="/#servicos" onClick={fechar}>Serviços</a>
           <NavLink to="/minhas-solicitacoes" onClick={fechar}>Acompanhar</NavLink>
-
+          {ehEquipe && <NavLink to="/admin" onClick={fechar}>Painel da equipe</NavLink>}
           {usuario ? (
             // Logada: mostra o nome e um botão para sair
             <span className="cabecalho__usuario">
