@@ -6,6 +6,3 @@ dist/
 .env.local
 .DS_Store
 npm-debug.log*
-
-# Arquivos enviados por clientes são privados e permanecem somente no armazenamento local.
-/backend/uploads/
