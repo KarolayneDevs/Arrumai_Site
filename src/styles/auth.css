@@ -1,0 +1,21 @@
+/* =====================================================================
+   ESTILOS DAS TELAS DE ENTRAR E CRIAR CONTA
+   (os campos, botões e cartões vêm de components.css e pages.css)
+   ===================================================================== */
+
+/* Dois campos lado a lado; no celular, um embaixo do outro */
+.campos-linha { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; }
+@media (max-width: 640px) { .campos-linha { grid-template-columns: 1fr; } }
+
+/* Variante com 2 cartões (o padrão .opcoes tem 3 colunas) */
+.opcoes--2 { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 640px) { .opcoes--2 { grid-template-columns: 1fr; } }
+
+/* Botão "Mostrar senhas" */
+.ver-senha { margin: -0.4rem 0 1.1rem; font-size: 0.9rem; }
+
+/* Link "Criar conta" / "Entrar" no pé da tela */
+.troca-modo a { font-weight: 700; color: var(--por-do-sol); }
+
+/* Aviso visível apenas no modo de desenvolvimento */
+.aviso-dev { max-width: none; margin-top: 1.5rem; padding: 0.8rem 1rem; border: 1.5px dashed var(--solimoes); border-radius: var(--raio-p); background: var(--solimoes-claro); font-size: 0.9rem; }

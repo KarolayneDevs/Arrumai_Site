@@ -1,38 +1,42 @@
 import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import Botao from '../../components/Botao';
+import '../../styles/auth.css';
 
 /* =====================================================================
-   ENTRAR / CRIAR CONTA (RF01)
-   Uma tela só, com dois modos: "entrar" e "cadastro".
-   Cliente pode ser pessoa ou empresa (documento de requisitos).
-   ATENÇÃO: sem back-end, o envio só "finge" o login. Procure por TODO.
+   ENTRAR (RF01)
+   O cadastro agora tem tela própria: veja pages/auth/Cadastro.jsx.
+
+   ATENÇÃO: o backend ainda não tem login. Aqui o envio só "finge" entrar.
+   Quando a API de login existir, troque o trecho marcado com TODO: ela
+   deve devolver o nome, o e-mail e o PAPEL da pessoa (cliente, equipe ou
+   admin). O papel precisa vir do servidor, nunca do próprio site.
    ===================================================================== */
+
+// SÓ PARA TESTAR O PAINEL ENQUANTO NÃO HÁ LOGIN DE VERDADE.
+// Funciona apenas com "npm run dev" (import.meta.env.DEV). Na versão
+// publicada (npm run build) esta lista é ignorada.
+const ADMINS_DE_TESTE = ['admin@arrumai.com.br'];
+
 export default function Login() {
   const { entrar } = useAuth();
   const navegar = useNavigate();
   const local = useLocation();
 
-  const [modo, setModo] = useState('entrar'); // 'entrar' ou 'cadastro'
-  // Um objeto guarda todos os campos; "campo" muda só o que o usuário digitou
-  const [dados, setDados] = useState({ nome: '', email: '', tipo: 'pessoa', senha: '', aceite: false });
+  const [dados, setDados] = useState({ email: '', senha: '' });
   const [erros, setErros] = useState({});
 
-  /** Atualiza um campo. Serve para todos: usa o "name" do input como chave. */
+  /** Atualiza o campo digitado (usa o "name" do input como chave). */
   function aoDigitar(evento) {
-    const { name, value, type, checked } = evento.target;
-    setDados({ ...dados, [name]: type === 'checkbox' ? checked : value });
+    const { name, value } = evento.target;
+    setDados({ ...dados, [name]: value });
   }
 
-  /** Confere os campos e devolve um objeto com as mensagens de erro. */
   function validar() {
     const e = {};
-    if (modo === 'cadastro' && dados.nome.trim().length < 3) e.nome = 'Informe seu nome completo.';
     if (!/^\S+@\S+\.\S+$/.test(dados.email)) e.email = 'Informe um e-mail válido, como nome@email.com.';
     if (dados.senha.length < 8) e.senha = 'A senha precisa ter pelo menos 8 caracteres.';
-    // LGPD (RNF03): o cadastro só segue com o aceite do tratamento de dados
-    if (modo === 'cadastro' && !dados.aceite) e.aceite = 'Marque a caixa para criar sua conta.';
     return e;
   }
 
@@ -40,45 +44,28 @@ export default function Login() {
     evento.preventDefault(); // impede a página de recarregar
     const e = validar();
     setErros(e);
-    if (Object.keys(e).length > 0) return; // tem erro: para aqui
+    if (Object.keys(e).length > 0) return;
 
-    // TODO: trocar por chamada à API (POST /login ou POST /usuarios).
-    // A senha vai para o servidor, que deve guardá-la criptografada (RNF02).
-    entrar({ nome: dados.nome || dados.email.split('@')[0], email: dados.email });
+    // TODO: trocar por chamada à API (POST /login). A senha vai para o
+    // servidor, que a confere com a versão criptografada (RNF02).
+    const email = dados.email.trim().toLowerCase();
+    const ehAdminDeTeste = import.meta.env.DEV && ADMINS_DE_TESTE.includes(email);
+    const papel = ehAdminDeTeste ? 'admin' : 'cliente';
 
-    // Volta para a página que ela queria abrir (veja RotaProtegida) ou vai para a lista
-    navegar(local.state?.de ?? '/minhas-solicitacoes', { replace: true });
+    entrar({ nome: email.split('@')[0], email, papel });
+
+    // Equipe vai para o painel; cliente volta para onde estava ou para a lista
+    const destino = papel === 'admin' ? '/admin' : local.state?.de ?? '/minhas-solicitacoes';
+    navegar(destino, { replace: true });
   }
 
   return (
     <div className="container pagina-estreita">
-      <h1>{modo === 'entrar' ? 'Entrar' : 'Criar conta'}</h1>
-      <p className="lead">
-        {modo === 'entrar'
-          ? 'Acompanhe suas solicitações e fale com a equipe.'
-          : 'Leva menos de um minuto. Depois é só enviar seu arquivo.'}
-      </p>
+      <h1>Entrar</h1>
+      <p className="lead">Acompanhe suas solicitações e fale com a equipe.</p>
 
       {/* noValidate: quem valida somos nós, com mensagens em português */}
       <form className="cartao" onSubmit={aoEnviar} noValidate>
-        {modo === 'cadastro' && (
-          <>
-            <div className={`campo ${erros.nome ? 'campo--erro' : ''}`}>
-              <label htmlFor="nome">Nome completo</label>
-              <input id="nome" name="nome" type="text" autoComplete="name" value={dados.nome} onChange={aoDigitar} />
-              {erros.nome && <span className="erro">{erros.nome}</span>}
-            </div>
-
-            <div className="campo">
-              <label htmlFor="tipo">Você é</label>
-              <select id="tipo" name="tipo" value={dados.tipo} onChange={aoDigitar}>
-                <option value="pessoa">Pessoa</option>
-                <option value="empresa">Empresa ou instituição</option>
-              </select>
-            </div>
-          </>
-        )}
-
         <div className={`campo ${erros.email ? 'campo--erro' : ''}`}>
           <label htmlFor="email">E-mail</label>
           <input id="email" name="email" type="email" autoComplete="email" value={dados.email} onChange={aoDigitar} />
@@ -87,40 +74,24 @@ export default function Login() {
 
         <div className={`campo ${erros.senha ? 'campo--erro' : ''}`}>
           <label htmlFor="senha">Senha</label>
-          <input
-            id="senha" name="senha" type="password"
-            autoComplete={modo === 'entrar' ? 'current-password' : 'new-password'}
-            value={dados.senha} onChange={aoDigitar}
-          />
+          <input id="senha" name="senha" type="password" autoComplete="current-password" value={dados.senha} onChange={aoDigitar} />
           {erros.senha && <span className="erro">{erros.senha}</span>}
         </div>
 
-        {modo === 'cadastro' && (
-          <div className={`campo campo--check ${erros.aceite ? 'campo--erro' : ''}`}>
-            <label>
-              <input type="checkbox" name="aceite" checked={dados.aceite} onChange={aoDigitar} />{' '}
-              Concordo que meus dados e documentos sejam tratados para prestar o serviço, conforme a LGPD.
-            </label>
-            {erros.aceite && <span className="erro">{erros.aceite}</span>}
-          </div>
-        )}
-
-        <Botao type="submit" className="botao--cheio">
-          {modo === 'entrar' ? 'Entrar' : 'Criar conta'}
-        </Botao>
+        <Botao type="submit" className="botao--cheio">Entrar</Botao>
       </form>
 
-      {/* Alterna entre os dois modos e limpa os erros do modo anterior */}
       <p className="troca-modo">
-        {modo === 'entrar' ? 'Ainda não tem conta?' : 'Já tem conta?'}{' '}
-        <button
-          type="button"
-          className="botao botao--texto"
-          onClick={() => { setModo(modo === 'entrar' ? 'cadastro' : 'entrar'); setErros({}); }}
-        >
-          {modo === 'entrar' ? 'Criar conta' : 'Entrar'}
-        </button>
+        Ainda não tem conta? <Link to="/cadastro" state={local.state}>Criar conta</Link>
       </p>
+
+      {/* Aviso que só aparece no modo de desenvolvimento */}
+      {import.meta.env.DEV && (
+        <p className="aviso-dev">
+          Modo de teste: para abrir o painel da equipe, entre com <strong>admin@arrumai.com.br</strong> e
+          qualquer senha de 8 caracteres.
+        </p>
+      )}
     </div>
   );
 }

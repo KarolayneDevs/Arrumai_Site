@@ -3,6 +3,7 @@ import Layout from '../components/Layout';
 import RotaProtegida from './RotaProtegida';
 import Home from '../pages/Home';
 import Login from '../pages/auth/Login';
+import Cadastro from '../pages/auth/Cadastro';
 import NovaSolicitacao from '../pages/cliente/NovaSolicitacao';
 import MinhasSolicitacoes from '../pages/cliente/MinhasSolicitacoes';
 import DetalheSolicitacao from '../pages/cliente/DetalheSolicitacao';
@@ -21,6 +22,7 @@ export default function AppRoutes() {
         {/* Públicas */}
         <Route path="/" element={<Home />} />
         <Route path="/entrar" element={<Login />} />
+        <Route path="/cadastro" element={<Cadastro />} />
 
         {/* Só para clientes logadas */}
         <Route element={<RotaProtegida />}>
