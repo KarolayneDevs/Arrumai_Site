@@ -10,7 +10,8 @@ import { createContext, useContext, useState } from 'react';
    receber um token do servidor. Senhas NUNCA devem ser guardadas aqui (RNF02).
    ===================================================================== */
 const AuthContext = createContext(null);
-const CHAVE = 'arrumai:usuario'; // nome sob o qual salvamos no navegador
+const CHAVE = 'arrumai:usuario';
+const CHAVE_TOKEN = 'arrumai:token';
 
 export function AuthProvider({ children }) {
   // A função passada ao useState roda só uma vez, ao abrir o site:
@@ -23,16 +24,18 @@ export function AuthProvider({ children }) {
     }
   });
 
-  /** Registra o usuário como logado. Recebe { nome, email }. */
-  function entrar(dados) {
+  /** Registra a sessao devolvida pelo backend. */
+  function entrar(dados, token) {
     setUsuario(dados);
     localStorage.setItem(CHAVE, JSON.stringify(dados));
+    localStorage.setItem(CHAVE_TOKEN, token);
   }
 
   /** Desloga e apaga o que foi salvo. */
   function sair() {
     setUsuario(null);
     localStorage.removeItem(CHAVE);
+    localStorage.removeItem(CHAVE_TOKEN);
   }
 
   return <AuthContext.Provider value={{ usuario, entrar, sair }}>{children}</AuthContext.Provider>;

@@ -12,6 +12,7 @@ import mysql from 'mysql2/promise';
 dotenv.config();
 
 export const memoryStore = {
+  usuarios: [],
   servicos: [
     {
       id: 1,

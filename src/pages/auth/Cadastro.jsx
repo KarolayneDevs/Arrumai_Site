@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import Botao from '../../components/Botao';
 import '../../styles/auth.css';
+import { apiFetch } from '../../services/api';
 
 /* =====================================================================
    CRIAR CONTA (RF01)
@@ -10,8 +11,8 @@ import '../../styles/auth.css';
    Campos: tipo de conta, nome, e-mail, telefone (opcional), senha,
    confirmação de senha e aceite da LGPD (RNF03).
 
-   ATENÇÃO: o backend ainda não tem rota de cadastro. O envio só "finge"
-   criar a conta. Procure por TODO para ver onde ligar a API.
+  O formulario envia os dados para a API, que valida o aceite LGPD e guarda
+  somente o hash da senha no MySQL.
    ===================================================================== */
 
 const ESTADO_INICIAL = {
@@ -35,6 +36,7 @@ export default function Cadastro() {
 
   const [dados, setDados] = useState(ESTADO_INICIAL);
   const [erros, setErros] = useState({});
+  const [erroApi, setErroApi] = useState('');
   const [verSenha, setVerSenha] = useState(false); // mostra/esconde a senha
 
   const empresa = dados.tipo === 'empresa';
@@ -78,21 +80,35 @@ export default function Cadastro() {
     return e;
   }
 
-  function aoEnviar(evento) {
+  async function aoEnviar(evento) {
     evento.preventDefault(); // impede a página de recarregar
     const e = validar();
     setErros(e);
     if (Object.keys(e).length > 0) return; // tem erro: para aqui
 
-    // TODO: trocar por chamada à API, por exemplo:
-    //   await apiFetch('/usuarios', { method: 'POST', body: JSON.stringify({
-    //     tipo, nome, email, telefone, cnpj, senha }) });
-    // A senha vai para o servidor, que a guarda CRIPTOGRAFADA (RNF02).
-    // Nunca guarde a senha no navegador.
-    entrar({ nome: dados.nome.trim(), email: dados.email.trim().toLowerCase(), papel: 'cliente' });
-
-    // Volta para onde a pessoa estava (ex.: "Pedir orçamento") ou vai para a lista
-    navegar(local.state?.de ?? '/minhas-solicitacoes', { replace: true });
+    setErroApi('');
+    try {
+      const resposta = await apiFetch('/auth/cadastro', {
+        method: 'POST',
+        body: JSON.stringify({
+          tipo: dados.tipo,
+          nome: dados.nome,
+          email: dados.email,
+          telefone: dados.telefone,
+          cnpj: dados.cnpj,
+          senha: dados.senha,
+          aceite: dados.aceite,
+        }),
+      });
+      const login = await apiFetch('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email: dados.email, senha: dados.senha }),
+      });
+      entrar(login.usuario, login.token);
+      navegar(local.state?.de ?? '/minhas-solicitacoes', { replace: true });
+    } catch (error) {
+      setErroApi(error.message);
+    }
   }
 
   return (
@@ -182,6 +198,7 @@ export default function Cadastro() {
       <p className="troca-modo">
         Já tem conta? <Link to="/entrar" state={local.state}>Entrar</Link>
       </p>
+      {erroApi && <p className="erro" role="alert">{erroApi}</p>}
     </div>
   );
 }

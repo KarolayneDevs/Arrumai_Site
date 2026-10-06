@@ -11,6 +11,25 @@ CREATE DATABASE IF NOT EXISTS arrumai;
 USE arrumai;
 
 -- -----------------------------------------------------------------------------
+-- USUARIOS
+-- -----------------------------------------------------------------------------
+-- Guarda os dados da conta. senha_hash contem somente a senha derivada pelo
+-- backend; a senha original nunca e gravada no MySQL.
+-- -----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    tipo ENUM('pessoa', 'empresa') NOT NULL DEFAULT 'pessoa',
+    nome VARCHAR(200) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    telefone VARCHAR(30),
+    cnpj VARCHAR(20),
+    senha_hash VARCHAR(300) NOT NULL,
+    papel ENUM('cliente', 'equipe', 'admin') NOT NULL DEFAULT 'cliente',
+    aceite_lgpd BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- -----------------------------------------------------------------------------
 -- TABELA DE SERVIÇOS
 -- -----------------------------------------------------------------------------
 -- Lista os tipos de serviço disponíveis no site. O front usa esses dados para

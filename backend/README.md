@@ -6,7 +6,7 @@ Este diretório concentra a API do projeto ARRUMAI para a primeira fase funciona
 
 - manter a API limpa e organizada;
 - cobrir os módulos que já existem no front;
-- deixar autenticação e cadastro para a segunda etapa;
+- oferecer cadastro e login de clientes;
 - facilitar que a equipe entenda cada parte do código.
 
 ## Como a API está organizada
@@ -16,6 +16,9 @@ Este diretório concentra a API do projeto ARRUMAI para a primeira fase funciona
 - `src/controllers/`: recebe requisições HTTP e delega a lógica.
 - `src/services/`: guarda a regra de negócio principal.
 - `src/config/`: centraliza banco, upload local e variáveis de ambiente.
+- `src/services/authService.js`: valida cadastro, cria hash da senha e inicia sessões.
+- `src/controllers/authController.js`: responde às requisições HTTP de autenticação.
+- `src/routes/auth.routes.js`: expõe cadastro e login.
 - `src/utils/status.js`: define a ordem correta dos status da solicitação.
 - `sql/schema.sql`: estrutura do banco para a primeira etapa.
 - `uploads/`: pasta local para arquivos de solicitação e comprovantes.
@@ -54,18 +57,23 @@ Essa ordem deve ser seguida para que o fluxo do sistema fique consistente e os s
 
 ## Como rodar
 
-1. Abra a pasta `backend`.
-2. Copie `.env.example` para `.env`.
-3. Instale as dependências:
+1. Inicie o Apache e o MySQL no XAMPP.
+2. Abra o phpMyAdmin em `http://localhost/phpmyadmin`.
+3. Execute todo o arquivo `sql/schema.sql` para criar o banco `arrumai` e a tabela `usuarios`.
+4. Abra a pasta `backend` e copie `.env.example` para `.env`.
+5. Confira no `.env` o usuário, senha e porta do MySQL do XAMPP.
+6. Instale as dependências:
    npm install
-4. Inicie a API:
+7. Inicie a API:
    npm run dev
-5. Verifique a saúde da API em:
+8. Verifique a saúde da API em:
    GET /api/health
 
 ## Endpoints principais
 
 - GET /api/health
+- POST /api/auth/cadastro
+- POST /api/auth/login
 - GET /api/servicos
 - POST /api/servicos
 - GET /api/solicitacoes
@@ -88,6 +96,8 @@ Essa ordem deve ser seguida para que o fluxo do sistema fique consistente e os s
 ## Observação importante
 
 Neste momento, os serviços de negócio usam `memoryStore`, inclusive quando as variáveis do MySQL estão configuradas. `GET /api/health` testa a conexão, mas não comprova persistência dos pedidos. Reiniciar a API apaga pedidos, propostas, pagamentos, comentários e metadados mantidos em memória. A integração dos serviços com as tabelas ainda precisa ser feita.
+
+O cadastro e o login já usam a tabela `usuarios` quando o `.env` está configurado. As senhas são protegidas com `scrypt` do próprio Node.js e nunca são retornadas pela API. O token de sessão desta primeira fase fica em memória no backend e é perdido quando a API reinicia; antes de colocar o sistema em produção, ele deve ser substituído por uma estratégia persistente, como JWT com expiração ou sessões armazenadas no banco.
 
 Arquivos reais ficam em `uploads/`; o serviço atualmente mantém seus metadados em memória, não no MySQL. A pasta é ignorada pelo Git para evitar publicar documentos privados. Consulte `../docs/fluxo-do-projeto.md` para o fluxo de anexos e o trecho que monta o link de visualização.
 

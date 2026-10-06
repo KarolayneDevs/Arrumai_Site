@@ -5,6 +5,7 @@ import solicitacoesRoutes from './routes/solicitacoes.routes.js';
 import propostasRoutes from './routes/propostas.routes.js';
 import pagamentosRoutes from './routes/pagamentos.routes.js';
 import arquivosRoutes from './routes/arquivos.routes.js';
+import authRoutes from './routes/auth.routes.js';
 import { testConnection } from './config/database.js';
 
 // -----------------------------------------------------------------------------
@@ -38,6 +39,7 @@ app.use('/api', solicitacoesRoutes);
 app.use('/api', propostasRoutes);
 app.use('/api', pagamentosRoutes);
 app.use('/api', arquivosRoutes);
+app.use('/api/auth', authRoutes);
 
 // Tratamento padrão para rota inexistente.
 app.use((req, res) => {

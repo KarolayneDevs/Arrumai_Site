@@ -3,21 +3,15 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import Botao from '../../components/Botao';
 import '../../styles/auth.css';
+import { apiFetch } from '../../services/api';
 
 /* =====================================================================
    ENTRAR (RF01)
    O cadastro agora tem tela própria: veja pages/auth/Cadastro.jsx.
 
-   ATENÇÃO: o backend ainda não tem login. Aqui o envio só "finge" entrar.
-   Quando a API de login existir, troque o trecho marcado com TODO: ela
-   deve devolver o nome, o e-mail e o PAPEL da pessoa (cliente, equipe ou
-   admin). O papel precisa vir do servidor, nunca do próprio site.
+  O backend devolve o usuario e o token da sessao. O papel vem do servidor,
+  nunca do formulario ou de uma regra no navegador.
    ===================================================================== */
-
-// SÓ PARA TESTAR O PAINEL ENQUANTO NÃO HÁ LOGIN DE VERDADE.
-// Funciona apenas com "npm run dev" (import.meta.env.DEV). Na versão
-// publicada (npm run build) esta lista é ignorada.
-const ADMINS_DE_TESTE = ['admin@arrumai.com.br'];
 
 export default function Login() {
   const { entrar } = useAuth();
@@ -26,6 +20,8 @@ export default function Login() {
 
   const [dados, setDados] = useState({ email: '', senha: '' });
   const [erros, setErros] = useState({});
+  const [erroApi, setErroApi] = useState('');
+  const [verSenha, setVerSenha] = useState(false);
 
   /** Atualiza o campo digitado (usa o "name" do input como chave). */
   function aoDigitar(evento) {
@@ -40,27 +36,29 @@ export default function Login() {
     return e;
   }
 
-  function aoEnviar(evento) {
+  async function aoEnviar(evento) {
     evento.preventDefault(); // impede a página de recarregar
     const e = validar();
     setErros(e);
     if (Object.keys(e).length > 0) return;
 
-    // TODO: trocar por chamada à API (POST /login). A senha vai para o
-    // servidor, que a confere com a versão criptografada (RNF02).
-    const email = dados.email.trim().toLowerCase();
-    const ehAdminDeTeste = import.meta.env.DEV && ADMINS_DE_TESTE.includes(email);
-    const papel = ehAdminDeTeste ? 'admin' : 'cliente';
+    setErroApi('');
+    try {
+      const resposta = await apiFetch('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify(dados),
+      });
+      entrar(resposta.usuario, resposta.token);
 
-    entrar({ nome: email.split('@')[0], email, papel });
-
-    // A equipe vai para o painel; cliente não deve retornar a uma rota exclusiva da equipe.
-    const destino = papel === 'admin'
-      ? '/admin'
-      : local.state?.de && !local.state.de.startsWith('/admin')
-        ? local.state.de
-        : '/';
-    navegar(destino, { replace: true });
+      const destino = resposta.usuario.papel === 'admin'
+        ? '/admin'
+        : local.state?.de && !local.state.de.startsWith('/admin')
+          ? local.state.de
+          : '/';
+      navegar(destino, { replace: true });
+    } catch (error) {
+      setErroApi(error.message);
+    }
   }
 
   return (
@@ -78,9 +76,13 @@ export default function Login() {
 
         <div className={`campo ${erros.senha ? 'campo--erro' : ''}`}>
           <label htmlFor="senha">Senha</label>
-          <input id="senha" name="senha" type="password" autoComplete="current-password" value={dados.senha} onChange={aoDigitar} />
+          <input id="senha" name="senha" type={verSenha ? 'text' : 'password'} autoComplete="current-password" value={dados.senha} onChange={aoDigitar} />
           {erros.senha && <span className="erro">{erros.senha}</span>}
         </div>
+
+        <button type="button" className="botao botao--texto ver-senha" onClick={() => setVerSenha(!verSenha)}>
+          {verSenha ? 'Esconder senha' : 'Mostrar senha'}
+        </button>
 
         <Botao type="submit" className="botao--cheio">Entrar</Botao>
       </form>
@@ -89,13 +91,7 @@ export default function Login() {
         Ainda não tem conta? <Link to="/cadastro" state={local.state}>Criar conta</Link>
       </p>
 
-      {/* Aviso que só aparece no modo de desenvolvimento */}
-      {import.meta.env.DEV && (
-        <p className="aviso-dev">
-          Modo de teste: para abrir o painel da equipe, entre com <strong>admin@arrumai.com.br</strong> e
-          qualquer senha de 8 caracteres.
-        </p>
-      )}
+      {erroApi && <p className="erro" role="alert">{erroApi}</p>}
     </div>
   );
 }
