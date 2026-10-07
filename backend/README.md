@@ -17,9 +17,10 @@ Este diretório concentra a API do projeto ARRUMAI para a primeira fase funciona
 - `src/services/`: guarda a regra de negócio principal.
 - `src/config/`: centraliza banco, upload local e variáveis de ambiente.
 - `src/middleware/auth.js`: valida o token Bearer e disponibiliza o usuário autenticado em `req.usuario`.
-- `src/services/authService.js`: valida cadastro, cria hash da senha e inicia sessões.
+- `src/services/authService.js`: valida cadastro, cria hash da senha, inicia sessões e gerencia tokens de recuperação.
+- `src/services/emailService.js`: envia links de recuperação por SMTP.
 - `src/controllers/authController.js`: responde às requisições HTTP de autenticação.
-- `src/routes/auth.routes.js`: expõe cadastro e login.
+- `src/routes/auth.routes.js`: expõe cadastro, login e recuperação de senha.
 - `src/utils/status.js`: define a ordem correta dos status da solicitação.
 - `sql/schema.sql`: estrutura do banco para a primeira etapa.
 - `uploads/`: pasta local para arquivos de solicitação e comprovantes.
@@ -75,6 +76,8 @@ Essa ordem deve ser seguida para que o fluxo do sistema fique consistente e os s
 - GET /api/health
 - POST /api/auth/cadastro
 - POST /api/auth/login
+- POST /api/auth/esqueci-senha
+- POST /api/auth/redefinir-senha
 - GET /api/servicos
 - POST /api/servicos
 - GET /api/solicitacoes
@@ -112,6 +115,10 @@ O comprovante de pagamento usa uma rota multipart específica, `POST /api/solici
 Neste momento, os serviços de negócio usam `memoryStore`, inclusive quando as variáveis do MySQL estão configuradas. `GET /api/health` testa a conexão, mas não comprova persistência dos pedidos. Reiniciar a API apaga pedidos, propostas, pagamentos, comentários e metadados mantidos em memória. A integração dos serviços com as tabelas ainda precisa ser feita.
 
 O cadastro e o login já usam a tabela `usuarios` quando o `.env` está configurado. As senhas são protegidas com `scrypt` do próprio Node.js e nunca são retornadas pela API. O token de sessão desta primeira fase fica em memória no backend e é perdido quando a API reinicia; antes de colocar o sistema em produção, ele deve ser substituído por uma estratégia persistente, como JWT com expiração ou sessões armazenadas no banco.
+
+A recuperação de senha gera um token de uso único com validade de uma hora. Com SMTP configurado, o token não é devolvido pela API: o usuário recebe por e-mail um link para `/redefinir-senha`. Sem SMTP, o modo de desenvolvimento devolve o token somente para permitir testes locais. Em produção, a API exige o serviço de e-mail configurado.
+
+Para enviar a recuperação por Gmail, copie as variáveis `SMTP_*` de `.env.example` para `.env` e use uma senha de app do Google em `SMTP_PASS` (a conta precisa ter verificação em duas etapas). Consulte [../docs/configuracao-email.md](../docs/configuracao-email.md) para o passo a passo.
 
 Arquivos reais ficam em `uploads/`; o serviço atualmente mantém seus metadados em memória, não no MySQL. A pasta é ignorada pelo Git para evitar publicar documentos privados. Consulte `../docs/fluxo-do-projeto.md` para o fluxo de anexos e o trecho que monta o link de visualização.
 

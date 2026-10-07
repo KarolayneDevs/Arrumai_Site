@@ -13,6 +13,8 @@ import { getDatabasePool, memoryStore } from '../config/database.js';
 
 const scrypt = promisify(crypto.scrypt);
 const sessoes = new Map();
+const tokensRecuperacao = new Map();
+const UMA_HORA = 60 * 60 * 1000;
 
 function normalizarEmail(email) {
   return String(email || '').trim().toLowerCase();
@@ -115,6 +117,73 @@ export async function entrar(emailInformado, senha) {
   sessoes.set(token, { id: usuario.id, papel: usuario.papel });
   return { token, usuario: usuarioPublico(usuario) };
 }
+
+function validarNovaSenha(senha) {
+  const valor = String(senha || '');
+  if (valor.length < 8 || !/[A-Za-z]/.test(valor) || !/\d/.test(valor)) {
+    throw new Error('A senha precisa ter 8 caracteres, letras e números.');
+  }
+  return valor;
+}
+
+async function buscarUsuarioPorEmail(email) {
+  const pool = await getDatabasePool();
+  if (pool) {
+    const [usuarios] = await pool.query('SELECT * FROM usuarios WHERE email = ? LIMIT 1', [email]);
+    return usuarios[0] || null;
+  }
+  return memoryStore.usuarios.find((usuario) => usuario.email === email) || null;
+}
+
+export async function solicitarRecuperacao(emailInformado) {
+    const email = normalizarEmail(emailInformado);
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      throw new Error('Informe um e-mail válido.');
+    }
+
+    const usuario = await buscarUsuarioPorEmail(email);
+    if (!usuario) {
+      return { encontrado: false };
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    tokensRecuperacao.set(token, { email, expiraEm: Date.now() + UMA_HORA });
+
+    return { encontrado: true, token };
+  }
+
+export async function redefinirSenha(tokenInformado, senhaInformada) {
+    const token = String(tokenInformado || '');
+    const recuperacao = tokensRecuperacao.get(token);
+    if (!recuperacao || recuperacao.expiraEm < Date.now()) {
+      tokensRecuperacao.delete(token);
+      throw new Error('O link de recuperação é inválido ou expirou.');
+    }
+
+    const senha = validarNovaSenha(senhaInformada);
+    const senhaHash = await gerarHash(senha);
+    const pool = await getDatabasePool();
+
+    if (pool) {
+      const [resultado] = await pool.query(
+        'UPDATE usuarios SET senha_hash = ? WHERE email = ? LIMIT 1',
+        [senhaHash, recuperacao.email],
+      );
+      if (!resultado.affectedRows) {
+        tokensRecuperacao.delete(token);
+        throw new Error('Não foi possível atualizar a senha desta conta.');
+      }
+    } else {
+      const usuario = memoryStore.usuarios.find((item) => item.email === recuperacao.email);
+      if (!usuario) {
+        tokensRecuperacao.delete(token);
+        throw new Error('Não foi possível atualizar a senha desta conta.');
+      }
+      usuario.senhaHash = senhaHash;
+    }
+
+    tokensRecuperacao.delete(token);
+  }
 
 export async function garantirAdministradorInicial() {
   const email = normalizarEmail(process.env.ADMIN_EMAIL || 'admin@arrumai.com');

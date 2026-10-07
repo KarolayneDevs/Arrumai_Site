@@ -87,6 +87,7 @@ export default function Login() {
         </div>
 
         <Botao type="submit" className="botao--cheio">Entrar</Botao>
+        <Link className="link-centralizado" to="/esqueci-senha">Esqueci minha senha</Link>
       </form>
 
       <p className="troca-modo">

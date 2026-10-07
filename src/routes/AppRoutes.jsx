@@ -5,6 +5,8 @@ import RotaAdmin from './RotaAdmin';
 import Home from '../pages/Home';
 import Login from '../pages/auth/Login';
 import Cadastro from '../pages/auth/Cadastro';
+import EsqueciSenha from '../pages/auth/EsqueciSenha';
+import RedefinirSenha from '../pages/auth/RedefinirSenha';
 import NovaSolicitacao from '../pages/cliente/NovaSolicitacao';
 import MinhasSolicitacoes from '../pages/cliente/MinhasSolicitacoes';
 import DetalheSolicitacao from '../pages/cliente/DetalheSolicitacao';
@@ -26,6 +28,8 @@ export default function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/entrar" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
+        <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+        <Route path="/redefinir-senha" element={<RedefinirSenha />} />
 
         {/* Só para clientes logadas */}
         <Route element={<RotaProtegida />}>

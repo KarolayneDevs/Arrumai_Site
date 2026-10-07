@@ -36,6 +36,8 @@
 
 /* Link "Criar conta" / "Entrar" no pé da tela */
 .troca-modo a { font-weight: 700; color: var(--por-do-sol); }
+.link-centralizado { display: block; margin-top: 1rem; text-align: center; font-weight: 700; color: var(--por-do-sol); }
+.mensagem-sucesso { margin-top: 1rem; color: var(--mata); }
 
 /* Aviso visível apenas no modo de desenvolvimento */
 .aviso-dev { max-width: none; margin-top: 1.5rem; padding: 0.8rem 1rem; border: 1.5px dashed var(--solimoes); border-radius: var(--raio-p); background: var(--solimoes-claro); font-size: 0.9rem; }

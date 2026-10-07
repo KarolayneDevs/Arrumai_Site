@@ -70,6 +70,35 @@ Datas exibidas no sistema usam o padrão brasileiro. O campo de prazo da propost
 
 Documentos de trabalho e entregas finais são salvos localmente em `backend/uploads/solicitacoes/`. Comprovantes de pagamento usam armazenamento dedicado em `backend/uploads/comprovantes/`. Em novos uploads, o nome original é preservado após a sanitização de caracteres inválidos; nomes repetidos recebem um contador para evitar sobrescrita. Essas pastas estão fora do Git por conter arquivos privados. O banco deve guardar somente os metadados e o vínculo com a solicitação. O funcionamento do link de visualização e a sequência completa estão descritos em [docs/fluxo-do-projeto.md](docs/fluxo-do-projeto.md).
 
+## Como executar localmente
+
+Abra dois terminais na raiz do projeto:
+
+```powershell
+# Terminal 1 - frontend
+npm run dev -- --host 0.0.0.0
+
+# Terminal 2 - backend
+cd backend
+npm run dev
+```
+
+O frontend fica disponível em `http://localhost:5173` e a API em
+`http://localhost:3001`. O backend pode usar o `memoryStore` para os módulos
+de negócio quando o MySQL não estiver configurado; cadastro, login e
+recuperação de senha usam as configurações disponíveis no `.env`.
+
+## Recuperação de senha
+
+Na tela de login, o link **Esqueci minha senha** abre o fluxo em
+`/esqueci-senha`. A API cria um token de uso único com validade de uma hora e
+envia um link para o e-mail cadastrado quando o SMTP está configurado. O link
+abre `/redefinir-senha` e permite cadastrar uma nova senha.
+
+O envio de e-mail usa Gmail SMTP em desenvolvimento. Consulte
+[docs/configuracao-email.md](docs/configuracao-email.md) para configurar uma
+senha de app sem colocar credenciais no Git.
+
 ##  Equipe
 
 | Nome | GitHub |

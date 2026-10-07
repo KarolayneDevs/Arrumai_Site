@@ -63,3 +63,27 @@ Este registro resume as melhorias implementadas no frontend e no backend do ARRU
 - Build do frontend executado com sucesso.
 - Diagnósticos do componente de análise administrativa sem erros.
 - API e frontend foram executados localmente para validação manual.
+
+## Recuperação de senha e e-mail
+
+- Foi adicionado o link “Esqueci minha senha” à tela de login.
+- Foram criadas as telas públicas `/esqueci-senha` e `/redefinir-senha`.
+- A API passou a expor `POST /api/auth/esqueci-senha` e `POST /api/auth/redefinir-senha`.
+- Os tokens expiram em uma hora, são de uso único e não armazenam a senha original.
+- A senha nova é protegida com `scrypt`, seguindo o mesmo padrão do cadastro.
+- Foi adicionado envio por SMTP usando Nodemailer, com suporte ao Gmail por senha de app.
+- O endereço do frontend usado nos links é configurado por `FRONTEND_URL`.
+- Credenciais SMTP ficam somente no `.env`, que é ignorado pelo Git.
+
+## Execução e acesso pela rede local
+
+- O frontend pode ser iniciado com `npm run dev -- --host 0.0.0.0`.
+- Para abrir o link em um celular, o celular e o computador precisam estar na mesma rede e a porta do Vite precisa estar liberada no firewall.
+- `FRONTEND_URL` deve apontar para um endereço acessível pelo dispositivo que abrirá o e-mail; `localhost` funciona somente no próprio computador.
+- O endereço IP local pode mudar ao reconectar à rede Wi-Fi. Para uso fora da rede local, publique o frontend em um domínio ou use um túnel seguro.
+
+## Limitações e próximos passos
+
+- O envio SMTP depende de uma senha de app válida e de conectividade com o provedor.
+- Tokens de recuperação ficam em memória e são perdidos quando o backend reinicia.
+- Ainda é necessário configurar um domínio ou serviço de túnel/hospedagem para links acessíveis fora da rede local.
