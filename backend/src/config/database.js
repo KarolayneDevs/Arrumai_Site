@@ -42,22 +42,7 @@ export const memoryStore = {
       ordem: 3,
     },
   ],
-  solicitacoes: [
-    {
-      id: 1,
-      protocolo: 'ARR-2024-002',
-      usuarioId: null,
-      servicoId: 2,
-      titulo: 'Artigo para periódico',
-      norma: 'ABNT NBR 6022',
-      descricao: 'Preciso revisar artigo científico e corrigir referências.',
-      status: 'PROPOSTA_ENVIADA',
-      valor: 120,
-      entregaPrevista: '2024-10-22',
-      metodoPagamento: 'PIX',
-      createdAt: new Date().toISOString(),
-    },
-  ],
+  solicitacoes: [],
   historicoStatus: [
   ],
   comentarios: [],

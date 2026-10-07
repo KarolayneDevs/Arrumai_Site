@@ -80,12 +80,15 @@ export default function Header() {
           <a href="/#como-funciona" onClick={fechar}>Como funciona</a>
           <a href="/#servicos" onClick={fechar}>Serviços</a>
           {!ehEquipe && <NavLink to="/minhas-solicitacoes" onClick={fechar}>Acompanhar</NavLink>}
-          {ehEquipe && <NavLink to="/admin" onClick={fechar}>Painel da equipe</NavLink>}
           {!usuario && (
             <NavLink to="/entrar" onClick={fechar}>Entrar</NavLink>
           )}
 
-          <Botao to="/nova-solicitacao" onClick={fechar}>Pedir orçamento</Botao>
+          {ehEquipe ? (
+            <Botao to="/admin" onClick={fechar}>Painel da equipe</Botao>
+          ) : (
+            <Botao to="/nova-solicitacao" onClick={fechar}>Pedir orçamento</Botao>
+          )}
         </nav>
       </div>
     </header>

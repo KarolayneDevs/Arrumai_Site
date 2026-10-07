@@ -13,18 +13,6 @@ const SOLICITACOES_DEMO = [
     valor: null,
     createdAt: '2026-10-01T12:00:00.000Z',
   },
-  {
-    id: 'demo-1002',
-    protocolo: 'ARR-DEMO-1002',
-    titulo: 'Artigo para periódico',
-    servicoId: 2,
-    norma: 'ABNT NBR 6022',
-    descricao: 'Revisar o artigo e adequar as citações às normas solicitadas.',
-    status: 'AGUARDANDO_PAGAMENTO',
-    valor: 120,
-    entregaPrevista: '2026-10-12',
-    createdAt: '2026-09-30T12:00:00.000Z',
-  },
 ];
 
 let demonstracaoAtiva = false;
@@ -64,16 +52,7 @@ function normalizar(s) {
   };
 }
 const PROPOSTAS_DEMO = [];
-const PAGAMENTOS_DEMO = [
-  {
-    id: 'demo-pagamento-1002',
-    solicitacaoId: 'demo-1002',
-    valor: 120,
-    metodo: 'PIX',
-    status: 'PENDENTE',
-    comprovanteId: null,
-  },
-];
+const PAGAMENTOS_DEMO = [];
 
 function encontrarSolicitacaoDemo(id) {
   return SOLICITACOES_DEMO.find((item) => String(item.id) === String(id));
