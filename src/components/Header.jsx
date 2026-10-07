@@ -47,14 +47,6 @@ export default function Header() {
           className={`cabecalho__menu ${menuAberto ? 'cabecalho__menu--aberto' : ''}`}
           aria-label="Menu principal"
         >
-          {/* Links com # levam a uma seção da página inicial.
-              Usamos <a> comum (e não <Link>) porque eles precisam carregar a home
-              e rolar até a seção. A mockup tem também "Preços", mas o valor de cada
-              trabalho vem na proposta, então esse item ficou de fora. */}
-          <a href="/#como-funciona" onClick={fechar}>Como funciona</a>
-          <a href="/#servicos" onClick={fechar}>Serviços</a>
-          {!ehEquipe && <NavLink to="/minhas-solicitacoes" onClick={fechar}>Acompanhar</NavLink>}
-          {ehEquipe && <NavLink to="/admin" onClick={fechar}>Painel da equipe</NavLink>}
           {usuario ? (
             // Logada: mostra o nome e um botão para sair
             <span className="cabecalho__usuario">
@@ -79,7 +71,17 @@ export default function Header() {
                 Sair
               </button>
             </span>
-          ) : (
+          ) : null}
+
+          {/* Links com # levam a uma seção da página inicial.
+              Usamos <a> comum (e não <Link>) porque eles precisam carregar a home
+              e rolar até a seção. A mockup tem também "Preços", mas o valor de cada
+              trabalho vem na proposta, então esse item ficou de fora. */}
+          <a href="/#como-funciona" onClick={fechar}>Como funciona</a>
+          <a href="/#servicos" onClick={fechar}>Serviços</a>
+          {!ehEquipe && <NavLink to="/minhas-solicitacoes" onClick={fechar}>Acompanhar</NavLink>}
+          {ehEquipe && <NavLink to="/admin" onClick={fechar}>Painel da equipe</NavLink>}
+          {!usuario && (
             <NavLink to="/entrar" onClick={fechar}>Entrar</NavLink>
           )}
 
