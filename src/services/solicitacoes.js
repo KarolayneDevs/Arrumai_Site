@@ -13,33 +13,7 @@ const STATUS_MAP = {
   CANCELADA: 'cancelada',
 };
 
-const SOLICITACOES_FALLBACK = [
-  {
-    id: '0231',
-    titulo: 'TCC · Enfermagem',
-    servico: 'padronizacao',
-    norma: 'ABNT NBR 14724',
-    status: 'em_andamento',
-    valor: 180,
-    entregaPrevista: '16/10',
-    pagamento: 'Pix',
-    datas: {
-      recebida: '12/10',
-      em_analise: '13/10',
-      proposta_enviada: '13/10',
-      aguardando_pagamento: '13/10',
-      pagamento_confirmado: '14/10',
-      em_andamento: '14/10',
-      concluida: 'previsto 16/10',
-    },
-    comentarios: [
-      { autor: 'equipe', texto: 'Recebemos seu arquivo. Falta só a folha de aprovação assinada.', quando: '13/10' },
-      { autor: 'cliente', texto: 'Enviei agora pouco, obrigada!', quando: '13/10' },
-    ],
-  },
-];
-
-export let SOLICITACOES = [...SOLICITACOES_FALLBACK];
+export let SOLICITACOES = [];
 
 function normalizarStatus(status) {
   return STATUS_MAP[String(status || '').toUpperCase()] || 'recebida';
@@ -73,10 +47,10 @@ export async function fetchSolicitacoes() {
       return SOLICITACOES;
     }
   } catch (error) {
-    console.warn('Falha ao carregar solicitações da API. Usando fallback local.', error.message);
+    console.warn('Falha ao carregar solicitações da API.', error.message);
   }
 
-  SOLICITACOES = [...SOLICITACOES_FALLBACK];
+  SOLICITACOES = [];
   return SOLICITACOES;
 }
 
@@ -86,7 +60,7 @@ export async function fetchSolicitacao(id) {
     return normalizarSolicitacao(dados);
   } catch (error) {
     console.warn('Falha ao carregar solicitação da API.', error.message);
-    return SOLICITACOES.find((s) => s.id === String(id));
+    return undefined;
   }
 }
 
@@ -101,12 +75,27 @@ export async function criarSolicitacao(payload) {
   return nova;
 }
 
+export async function excluirSolicitacao(id) {
+  await apiFetch(`/solicitacoes/${id}`, { method: 'DELETE' });
+  SOLICITACOES = SOLICITACOES.filter((solicitacao) => solicitacao.id !== String(id));
+}
+
 export async function uploadArquivoSolicitacao(id, arquivo, tipo = 'DOCUMENTO') {
   const formData = new FormData();
   formData.append('arquivo', arquivo);
   formData.append('tipo', tipo);
 
   return apiFetch(`/solicitacoes/${id}/arquivos`, {
+    method: 'POST',
+    body: formData,
+  });
+}
+
+export async function uploadComprovanteSolicitacao(id, arquivo) {
+  const formData = new FormData();
+  formData.append('comprovante', arquivo);
+
+  return apiFetch(`/solicitacoes/${id}/comprovantes`, {
     method: 'POST',
     body: formData,
   });

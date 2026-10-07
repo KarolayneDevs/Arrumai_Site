@@ -45,20 +45,6 @@ export const memoryStore = {
   solicitacoes: [
     {
       id: 1,
-      protocolo: 'ARR-2024-001',
-      usuarioId: null,
-      servicoId: 3,
-      titulo: 'TCC · Enfermagem',
-      norma: 'ABNT NBR 14724',
-      descricao: 'Preciso de padronização de monografia para a banca.',
-      status: 'EM_ANDAMENTO',
-      valor: 180,
-      entregaPrevista: '2024-10-16',
-      metodoPagamento: 'PIX',
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: 2,
       protocolo: 'ARR-2024-002',
       usuarioId: null,
       servicoId: 2,
@@ -73,72 +59,11 @@ export const memoryStore = {
     },
   ],
   historicoStatus: [
-    {
-      id: 1,
-      solicitacaoId: 1,
-      statusAnterior: null,
-      statusNovo: 'RECEBIDA',
-      observacao: 'Solicitação criada.',
-      dataHora: new Date().toISOString(),
-    },
-    {
-      id: 2,
-      solicitacaoId: 1,
-      statusAnterior: 'RECEBIDA',
-      statusNovo: 'EM_ANDAMENTO',
-      observacao: 'Trabalho já em execução.',
-      dataHora: new Date().toISOString(),
-    },
   ],
-  comentarios: [
-    {
-      id: 1,
-      solicitacaoId: 1,
-      usuarioId: null,
-      autorTipo: 'EQUIPE',
-      mensagem: 'Recebemos seu arquivo. Falta só a folha de aprovação assinada.',
-      dataHora: new Date().toISOString(),
-    },
-  ],
-  arquivos: [
-    {
-      id: 1,
-      solicitacaoId: 1,
-      tipo: 'DOCUMENTO',
-      nomeOriginal: 'modelo-tcc.pdf',
-      nomeArmazenado: 'documento-1.pdf',
-      caminho: '/uploads/documento-1.pdf',
-      mimeType: 'application/pdf',
-      tamanhoBytes: 245760,
-      dataHora: new Date().toISOString(),
-    },
-  ],
-  propostas: [
-    {
-      id: 1,
-      solicitacaoId: 1,
-      valor: 180,
-      prazoDias: 10,
-      observacao: 'Proposta inicial com revisão final.',
-      status: 'ACEITA',
-      dataEnvio: new Date().toISOString(),
-      dataResposta: new Date().toISOString(),
-    },
-  ],
-  pagamentos: [
-    {
-      id: 1,
-      solicitacaoId: 1,
-      chavePix: 'pagamentos@arrumai.com.br',
-      valor: 180,
-      metodo: 'PIX',
-      status: 'CONFIRMADO',
-      comprovanteId: 1,
-      dataComprovante: new Date().toISOString(),
-      dataConferencia: new Date().toISOString(),
-      motivoRecusa: null,
-    },
-  ],
+  comentarios: [],
+  arquivos: [],
+  propostas: [],
+  pagamentos: [],
 };
 
 const dbConfig = {

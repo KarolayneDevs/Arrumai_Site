@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Construir a API e o banco de dados para os módulos que já existem no front e que não dependem de login/cadastro, mantendo a autenticação para a fase posterior.
+Construir a API e o banco de dados para os módulos que já existem no front, incluindo autenticação, autorização e o fluxo de solicitações, pagamentos, arquivos e comentários.
 
 ## Stack recomendada
 
@@ -90,6 +90,15 @@ Campos:
 - mime_type
 - tamanho
 - created_at
+
+Os uploads são separados por finalidade:
+
+- documentos da solicitação e entregas finais: `backend/uploads/solicitacoes/`;
+- comprovantes de pagamento: `backend/uploads/comprovantes/`.
+
+Comprovantes são enviados pela rota multipart `POST /api/solicitacoes/:id/comprovantes`, usando o campo `comprovante`, e ficam vinculados ao pagamento pelo campo `comprovante_id`.
+
+O nome original é usado no arquivo armazenado, com caracteres inválidos substituídos por `_`. Quando o nome já existe no diretório de destino, o sistema acrescenta um contador antes da extensão para preservar todos os uploads.
 
 ### 5) Proposta
 Fonte no front:
@@ -221,6 +230,6 @@ backend/
 9. Testes básicos da API
 10. Integração com o front
 
-## Próximo passo
+## Estado atual
 
-Quando os requisitos, modelo conceitual e classes do banco forem enviados, eu faço a etapa de implementação real no projeto, conectando cada botão/ícone do site a sua tabela e rota correspondente.
+O fluxo principal já está integrado ao frontend. As rotas de solicitações exigem autenticação Bearer, clientes visualizam apenas os próprios pedidos e administradores podem consultar todos. O armazenamento de negócio ainda usa `memoryStore` até a integração completa com as tabelas MySQL.

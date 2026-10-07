@@ -116,6 +116,47 @@ export async function entrar(emailInformado, senha) {
   return { token, usuario: usuarioPublico(usuario) };
 }
 
+export async function garantirAdministradorInicial() {
+  const email = normalizarEmail(process.env.ADMIN_EMAIL || 'admin@arrumai.com');
+  const senha = process.env.ADMIN_PASSWORD || 'Admin@123456';
+  const senhaHash = await gerarHash(senha);
+  const pool = await getDatabasePool();
+
+  if (pool) {
+    await pool.query(
+      `INSERT INTO usuarios
+        (tipo, nome, email, senha_hash, papel, aceite_lgpd)
+       VALUES ('pessoa', 'Administrador ARRUMAI', ?, ?, 'admin', TRUE)
+       ON DUPLICATE KEY UPDATE
+         nome = VALUES(nome),
+         senha_hash = VALUES(senha_hash),
+         papel = 'admin',
+         aceite_lgpd = TRUE`,
+      [email, senhaHash],
+    );
+    return;
+  }
+
+  const existente = memoryStore.usuarios.find((usuario) => usuario.email === email);
+  if (existente) {
+    existente.nome = 'Administrador ARRUMAI';
+    existente.senhaHash = senhaHash;
+    existente.papel = 'admin';
+    existente.aceite = true;
+    return;
+  }
+
+  memoryStore.usuarios.push({
+    id: memoryStore.usuarios.length + 1,
+    nome: 'Administrador ARRUMAI',
+    email,
+    senhaHash,
+    papel: 'admin',
+    tipo: 'pessoa',
+    aceite: true,
+  });
+}
+
 export function obterSessao(token) {
   return sessoes.get(token) || null;
 }

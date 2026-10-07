@@ -57,12 +57,18 @@ Este documento registra a sequência correta das etapas do projeto para evitar q
 
 A tela admin analisa pedidos, envia propostas, confere pagamentos, conversa com o cliente e anexa o documento final. O cliente acompanha a proposta, decide se aceita, envia comprovante e recebe a entrega.
 
+As solicitações são protegidas por autenticação. O cliente vê somente seus próprios pedidos; o administrador vê todos os pedidos disponíveis no painel. Se a sessão expirar, o frontend remove o token local e encaminha o usuário para `/entrar`.
+
+O cliente pode apagar uma solicitação própria antes de existir proposta aceita com pagamento confirmado. O administrador pode apagar em qualquer etapa. Também é possível selecionar várias solicitações nas telas de cliente e admin e excluí-las após confirmação.
+
 ## Anexos e visualização de documentos
 
 - Arquivos iniciais usam o tipo `DOCUMENTO`.
 - Comprovantes usam `COMPROVANTE` e aparecem junto ao pagamento, não na lista de documentos do pedido.
 - A entrega final usa `DOCUMENTO_FINAL` e só deve ser marcada como concluída depois do upload.
 - O conteúdo do arquivo fica em `backend/uploads/`; a API mantém metadados para associá-lo à solicitação. Os uploads locais são ignorados pelo Git.
+
+O comprovante é enviado pela rota `POST /api/solicitacoes/:id/comprovantes`, usando o campo multipart `comprovante`. Essa rota utiliza armazenamento dedicado em `backend/uploads/comprovantes/`, evitando que o comprovante seja confundido com documentos gerais em `backend/uploads/solicitacoes/`. O nome original do upload é preservado no disco após a remoção de caracteres inválidos; em caso de duplicidade, um contador é acrescentado ao nome.
 
 ### Como o link abre o PDF
 
@@ -89,8 +95,14 @@ Trecho usado pelo cliente para exibir a entrega final:
 </a>
 ```
 
-O admin usa o mesmo endpoint para abrir anexos e comprovantes. Essa rota ainda não tem autenticação por usuário. O controller a bloqueia quando `NODE_ENV=production`, mas isso não substitui autorização; não publique documentos reais até o backend validar identidade e acesso ao pedido.
+O admin usa o mesmo endpoint para abrir anexos e comprovantes. O acesso às solicitações é protegido por autenticação e autorização; mantenha a validação de identidade e vínculo com o pedido também ao expandir as rotas de arquivos.
 
 ## Persistência atual
 
 O schema MySQL está definido, mas os serviços de pedidos, propostas, pagamentos, comentários e metadados de arquivos ainda usam `memoryStore`. O health check do banco apenas testa a conexão; `database.ok: true` não significa que os serviços já gravam nas tabelas. Reiniciar a API apaga esses registros em memória, embora os arquivos físicos possam continuar em `uploads/` sem vínculo.
+
+## Datas e responsividade
+
+- Datas de listas, históricos e detalhes são formatadas com `pt-BR` (`dd/mm/aaaa` e `dd/mm/aaaa hh:mm`).
+- O prazo da proposta usa o calendário nativo (`input type="date"`), com `lang="pt-BR"` para a apresentação brasileira e valor ISO (`aaaa-mm-dd`) enviado à API.
+- O cabeçalho troca os links pelo botão `Menu` em larguras menores, evitando que a navegação fique comprimida.

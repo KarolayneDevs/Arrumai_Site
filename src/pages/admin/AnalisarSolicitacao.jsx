@@ -225,7 +225,15 @@ export default function AnalisarSolicitacao() {
                 </div>
                 <div className="campo">
                   <label htmlFor="entregaPrevista">Data prevista de entrega</label>
-                  <input id="entregaPrevista" type="date" min={dataAtualParaInput()} required value={entregaPrevista} onChange={(evento) => setEntregaPrevista(evento.target.value)} />
+                  <input
+                    id="entregaPrevista"
+                    type="date"
+                    lang="pt-BR"
+                    min={dataAtualParaInput()}
+                    required
+                    value={entregaPrevista}
+                    onChange={(evento) => setEntregaPrevista(evento.target.value)}
+                  />
                 </div>
                 <div className="campo">
                   <label htmlFor="observacao">Observação para o cliente</label>

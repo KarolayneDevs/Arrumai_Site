@@ -33,11 +33,18 @@
 .botao--secundario:hover { background: var(--rio-negro); color: var(--papel); }
 
 .botao--texto {
-  background: none;
+  background: var(--branco);
   color: var(--rio-negro);
-  padding: 0.4rem 0.2rem;
-  border-radius: 0;
-  border-bottom-color: var(--rio-negro);
+  padding: 0.55rem 0.9rem;
+  border: 1.5px solid var(--borda);
+  border-radius: 999px;
+  font-size: 0.9rem;
+  transition: transform 0.15s, background 0.15s, color 0.15s, border-color 0.15s;
+}
+.botao--texto:hover {
+  background: var(--papel-escuro);
+  border-color: var(--por-do-sol);
+  color: var(--rio-negro);
 }
 
 /* Variante do secundário para fundos escuros */
@@ -156,7 +163,8 @@
 }
 .cabecalho__menu-botao { display: none; }
 
-@media (max-width: 860px) {
+/* O menu compacto entra antes de o cabeçalho precisar quebrar os links. */
+@media (max-width: 1000px) {
   .cabecalho__menu-botao {
     display: inline-block;
     padding: 0.5rem 1rem;

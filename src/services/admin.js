@@ -126,6 +126,16 @@ export async function listarSolicitacoesAdmin() {
     demonstracaoAtiva = true;
     return SOLICITACOES_DEMO.map(normalizar);
   }
+
+}
+
+export async function excluirSolicitacaoAdmin(id) {
+  if (demonstracaoAtiva) {
+    const indice = SOLICITACOES_DEMO.findIndex((item) => String(item.id) === String(id));
+    if (indice >= 0) SOLICITACOES_DEMO.splice(indice, 1);
+    return;
+  }
+  await apiFetch(`/solicitacoes/${id}`, { method: 'DELETE' });
 }
 
 /** Busca uma solicitação pelo id. */

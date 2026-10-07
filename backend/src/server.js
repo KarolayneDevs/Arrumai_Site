@@ -1,4 +1,5 @@
 import app from './app.js';
+import { garantirAdministradorInicial } from './services/authService.js';
 
 // -----------------------------------------------------------------------------
 // SERVIDOR DA API
@@ -9,6 +10,13 @@ import app from './app.js';
 
 const PORT = Number(process.env.PORT || 3001);
 
-app.listen(PORT, () => {
-  console.log(`API ARRUMAI rodando em http://localhost:${PORT}`);
-});
+garantirAdministradorInicial()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`API ARRUMAI rodando em http://localhost:${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error(`Não foi possível criar o administrador inicial: ${error.message}`);
+    process.exitCode = 1;
+  });

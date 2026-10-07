@@ -58,11 +58,17 @@ Esses status encerram a solicitação sem seguir o fluxo normal.
 
 ### Importante
 
-A equipe administra os pedidos pelo painel. A interface de acompanhamento do cliente existe, mas o backend ainda não vincula pedidos a contas: enquanto autenticação e autorização não forem implementadas, a API não isola os dados por cliente e não deve ser usada com documentos reais.
+A equipe administra os pedidos pelo painel e cada cliente acompanha somente as próprias solicitações. As rotas de solicitações exigem autenticação por token; administradores podem consultar todos os pedidos, enquanto clientes não conseguem acessar pedidos de outras contas.
+
+O cliente pode excluir as próprias solicitações enquanto elas não tiverem proposta aceita e pagamento confirmado. A equipe administrativa pode excluir solicitações em qualquer etapa. A exclusão remove também os dados relacionados e os arquivos associados.
+
+O frontend possui seleção múltipla nas telas de cliente e administração, com confirmação antes da exclusão. A sessão expirada limpa os dados locais e redireciona para a tela de login.
+
+Datas exibidas no sistema usam o padrão brasileiro. O campo de prazo da proposta mantém o calendário nativo do navegador, com `lang="pt-BR"`, e envia o valor no formato interno `aaaa-mm-dd`.
 
 ### Arquivos e documento final
 
-Documentos de trabalho, comprovantes e entregas finais são salvos localmente em `backend/uploads/`; essa pasta está fora do Git por conter arquivos privados. O banco deve guardar somente os metadados e o vínculo com a solicitação. O funcionamento do link de visualização e a sequência completa estão descritos em [docs/fluxo-do-projeto.md](docs/fluxo-do-projeto.md).
+Documentos de trabalho e entregas finais são salvos localmente em `backend/uploads/solicitacoes/`. Comprovantes de pagamento usam armazenamento dedicado em `backend/uploads/comprovantes/`. Em novos uploads, o nome original é preservado após a sanitização de caracteres inválidos; nomes repetidos recebem um contador para evitar sobrescrita. Essas pastas estão fora do Git por conter arquivos privados. O banco deve guardar somente os metadados e o vínculo com a solicitação. O funcionamento do link de visualização e a sequência completa estão descritos em [docs/fluxo-do-projeto.md](docs/fluxo-do-projeto.md).
 
 ##  Equipe
 

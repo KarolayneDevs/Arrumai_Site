@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import Botao from '../../components/Botao';
 import '../../styles/auth.css';
 import { apiFetch } from '../../services/api';
+import Icone from '../../components/Icone';
 
 /* =====================================================================
    CRIAR CONTA (RF01)
@@ -167,22 +168,27 @@ export default function Cadastro() {
         <div className="campos-linha">
           <div className={`campo ${erros.senha ? 'campo--erro' : ''}`}>
             <label htmlFor="senha">Senha</label>
-            <input id="senha" name="senha" type={verSenha ? 'text' : 'password'} autoComplete="new-password" value={dados.senha} onChange={aoDigitar} />
+            <div className="campo-senha">
+              <input id="senha" name="senha" type={verSenha ? 'text' : 'password'} autoComplete="new-password" value={dados.senha} onChange={aoDigitar} />
+              <button type="button" className="campo-senha__botao" onClick={() => setVerSenha(!verSenha)} aria-label={verSenha ? 'Ocultar senhas' : 'Mostrar senhas'} title={verSenha ? 'Ocultar senhas' : 'Mostrar senhas'}>
+                <Icone nome={verSenha ? 'olhoFechado' : 'olho'} tamanho={21} />
+              </button>
+            </div>
             <small>Mínimo de 8 caracteres, com letras e números.</small>
             {erros.senha && <span className="erro">{erros.senha}</span>}
           </div>
 
           <div className={`campo ${erros.confirmarSenha ? 'campo--erro' : ''}`}>
             <label htmlFor="confirmarSenha">Repita a senha</label>
-            <input id="confirmarSenha" name="confirmarSenha" type={verSenha ? 'text' : 'password'} autoComplete="new-password" value={dados.confirmarSenha} onChange={aoDigitar} />
+            <div className="campo-senha">
+              <input id="confirmarSenha" name="confirmarSenha" type={verSenha ? 'text' : 'password'} autoComplete="new-password" value={dados.confirmarSenha} onChange={aoDigitar} />
+              <button type="button" className="campo-senha__botao" onClick={() => setVerSenha(!verSenha)} aria-label={verSenha ? 'Ocultar senhas' : 'Mostrar senhas'} title={verSenha ? 'Ocultar senhas' : 'Mostrar senhas'}>
+                <Icone nome={verSenha ? 'olhoFechado' : 'olho'} tamanho={21} />
+              </button>
+            </div>
             {erros.confirmarSenha && <span className="erro">{erros.confirmarSenha}</span>}
           </div>
         </div>
-
-        {/* Um botão só controla o "ver senha" dos dois campos */}
-        <button type="button" className="botao botao--texto ver-senha" onClick={() => setVerSenha(!verSenha)}>
-          {verSenha ? 'Esconder senhas' : 'Mostrar senhas'}
-        </button>
 
         <div className={`campo campo--check ${erros.aceite ? 'campo--erro' : ''}`}>
           <label>

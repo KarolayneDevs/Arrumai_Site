@@ -18,24 +18,45 @@ folders.forEach((folder) => {
   fs.mkdirSync(dir, { recursive: true });
 });
 
-const storage = multer.diskStorage({
-  destination: (_req, file, callback) => {
-    const nomeOriginal = String(file.originalname || '').toLowerCase();
-    const destino = nomeOriginal.includes('comprovante') || file.fieldname === 'comprovante'
-      ? 'comprovantes'
-      : 'solicitacoes';
+function criarStorage(destinoFixo = null) {
+  return multer.diskStorage({
+    destination: (_req, file, callback) => {
+      callback(null, obterDiretorioDestino(file, destinoFixo));
+    },
+    filename: (_req, file, callback) => {
+      const diretorio = obterDiretorioDestino(file, destinoFixo);
+      const nomeOriginal = limparNomeArquivo(file.originalname);
+      const extensao = path.extname(nomeOriginal);
+      const base = path.basename(nomeOriginal, extensao) || 'arquivo';
+      let nome = nomeOriginal || `arquivo${extensao}`;
+      let contador = 1;
 
-    callback(null, path.join(uploadRoot, destino));
-  },
-  filename: (_req, file, callback) => {
-    const extensao = path.extname(file.originalname || '');
-    const nomeBase = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    callback(null, `${nomeBase}${extensao}`);
-  },
-});
+      while (fs.existsSync(path.join(diretorio, nome))) {
+        nome = `${base} (${contador})${extensao}`;
+        contador += 1;
+      }
 
-export const upload = multer({
-  storage,
+      callback(null, nome);
+    },
+  });
+}
+
+function obterDiretorioDestino(file, destinoFixo) {
+  const nomeOriginal = String(file.originalname || '').toLowerCase();
+  const destino = destinoFixo || (nomeOriginal.includes('comprovante') || file.fieldname === 'comprovante'
+    ? 'comprovantes'
+    : 'solicitacoes');
+
+  return path.join(uploadRoot, destino);
+}
+
+function limparNomeArquivo(nomeOriginal) {
+  return path.basename(String(nomeOriginal || ''))
+    .replace(/[<>:"/\\|?*\u0000-\u001F]/g, '_')
+    .trim();
+}
+
+const opcoesUpload = {
   limits: {
     fileSize: 5 * 1024 * 1024,
   },
@@ -57,4 +78,14 @@ export const upload = multer({
 
     callback(new Error('Tipo de arquivo não permitido.')); 
   },
+};
+
+export const upload = multer({
+  ...opcoesUpload,
+  storage: criarStorage(),
+});
+
+export const uploadComprovante = multer({
+  ...opcoesUpload,
+  storage: criarStorage('comprovantes'),
 });

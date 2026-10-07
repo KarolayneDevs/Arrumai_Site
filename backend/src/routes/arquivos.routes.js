@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { listarArquivos, criar, visualizar } from '../controllers/arquivosController.js';
-import { upload } from '../config/upload.js';
+import { upload, uploadComprovante } from '../config/upload.js';
 
 // -----------------------------------------------------------------------------
 // ROTAS DE ARQUIVOS
@@ -15,5 +15,6 @@ const router = Router();
 router.get('/arquivos/:id/visualizar', visualizar);
 router.get('/solicitacoes/:id/arquivos', listarArquivos);
 router.post('/solicitacoes/:id/arquivos', upload.single('arquivo'), criar);
+router.post('/solicitacoes/:id/comprovantes', uploadComprovante.single('comprovante'), criar);
 
 export default router;

@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 /* =====================================================================
@@ -14,9 +14,10 @@ const PAPEIS_DA_EQUIPE = ['admin', 'equipe'];
 
 export default function RotaAdmin() {
   const { usuario } = useAuth();
+  const local = useLocation();
 
   if (!usuario) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/entrar" state={{ de: local.pathname + local.search }} replace />;
   }
 
   if (!PAPEIS_DA_EQUIPE.includes(usuario.papel)) {

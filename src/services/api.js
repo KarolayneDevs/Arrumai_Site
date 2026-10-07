@@ -8,6 +8,11 @@ export function apiUrl(path) {
 export async function apiFetch(path, options = {}) {
   const headers = { ...(options.headers || {}) };
   const body = options.body;
+  const token = localStorage.getItem('arrumai:token');
+
+  if (token && !headers.Authorization) {
+    headers.Authorization = `Bearer ${token}`;
+  }
 
   if (!(body instanceof FormData) && !headers['Content-Type']) {
     headers['Content-Type'] = 'application/json';
@@ -24,6 +29,11 @@ export async function apiFetch(path, options = {}) {
 
   if (!response.ok) {
     const message = payload?.message || 'Erro ao comunicar com a API.';
+    if (response.status === 401 && !path.startsWith('/auth/')) {
+      localStorage.removeItem('arrumai:usuario');
+      localStorage.removeItem('arrumai:token');
+      window.location.assign('/entrar');
+    }
     throw new Error(message);
   }
 

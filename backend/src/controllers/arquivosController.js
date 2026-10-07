@@ -27,6 +27,7 @@ export async function criar(req, res) {
   try {
     const dadosArquivo = {
       ...(req.body || {}),
+      tipo: req.body?.tipo || (req.file?.fieldname === 'comprovante' ? 'COMPROVANTE' : undefined),
       file: req.file || null,
     };
 

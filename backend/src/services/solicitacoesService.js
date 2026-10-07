@@ -1,4 +1,6 @@
 import { memoryStore } from '../config/database.js';
+import fs from 'node:fs';
+import path from 'node:path';
 import { podeAvancarStatus, STATUS_FINAIS, statusEhValido } from '../utils/status.js';
 
 // -----------------------------------------------------------------------------
@@ -13,15 +15,19 @@ function gerarProtocolo() {
   return `ARR-${numero}`;
 }
 
-export async function listarSolicitacoes() {
-  return memoryStore.solicitacoes;
+export async function listarSolicitacoes(usuario) {
+  if (usuario?.papel === 'admin') return memoryStore.solicitacoes;
+  return memoryStore.solicitacoes.filter((solicitacao) => solicitacao.usuarioId === usuario.id);
 }
 
-export async function buscarSolicitacaoPorId(id) {
-  return memoryStore.solicitacoes.find((solicitacao) => solicitacao.id === Number(id));
+export async function buscarSolicitacaoPorId(id, usuario) {
+  const solicitacao = memoryStore.solicitacoes.find((item) => item.id === Number(id));
+  if (!solicitacao) return undefined;
+  if (usuario && usuario.papel !== 'admin' && solicitacao.usuarioId !== usuario.id) return undefined;
+  return solicitacao;
 }
 
-export async function criarSolicitacao(dados) {
+export async function criarSolicitacao(dados, usuario) {
   const servicoId = Number(dados.servicoId || 0);
   const titulo = String(dados.titulo || '').trim();
   const descricao = String(dados.descricao || '').trim();
@@ -41,7 +47,7 @@ export async function criarSolicitacao(dados) {
   const novaSolicitacao = {
     id: memoryStore.solicitacoes.length + 1,
     protocolo: gerarProtocolo(),
-    usuarioId: dados.usuarioId || null,
+    usuarioId: usuario.id,
     servicoId,
     titulo,
     norma: dados.norma || 'Norma não informada',
@@ -67,8 +73,8 @@ export async function criarSolicitacao(dados) {
   return novaSolicitacao;
 }
 
-export async function atualizarStatusSolicitacao(id, novoStatus, observacao = '') {
-  const solicitacao = await buscarSolicitacaoPorId(id);
+export async function atualizarStatusSolicitacao(id, novoStatus, observacao = '', usuario) {
+  const solicitacao = await buscarSolicitacaoPorId(id, usuario);
 
   if (!solicitacao) {
     throw new Error('Solicitação não encontrada.');
@@ -101,8 +107,8 @@ export async function atualizarStatusSolicitacao(id, novoStatus, observacao = ''
   return solicitacao;
 }
 
-export async function adicionarComentario(id, dados) {
-  const solicitacao = await buscarSolicitacaoPorId(id);
+export async function adicionarComentario(id, dados, usuario) {
+  const solicitacao = await buscarSolicitacaoPorId(id, usuario);
 
   if (!solicitacao) {
     throw new Error('Solicitação não encontrada.');
@@ -127,10 +133,55 @@ export async function adicionarComentario(id, dados) {
   return comentario;
 }
 
-export async function listarComentariosPorSolicitacao(id) {
+export async function listarComentariosPorSolicitacao(id, usuario) {
+  await garantirAcesso(id, usuario);
   return memoryStore.comentarios.filter((comentario) => comentario.solicitacaoId === Number(id));
 }
 
-export async function listarHistoricoPorSolicitacao(id) {
+export async function listarHistoricoPorSolicitacao(id, usuario) {
+  await garantirAcesso(id, usuario);
   return memoryStore.historicoStatus.filter((item) => item.solicitacaoId === Number(id));
+}
+
+export async function excluirSolicitacao(id, usuario) {
+  const solicitacao = await buscarSolicitacaoPorId(id, usuario);
+  if (!solicitacao) throw new Error('Solicitação não encontrada.');
+
+  const solicitacaoId = solicitacao.id;
+  const propostaAceita = memoryStore.propostas.some(
+    (proposta) => proposta.solicitacaoId === solicitacaoId && proposta.status === 'ACEITA',
+  );
+  const pagamentoConfirmado = memoryStore.pagamentos.some(
+    (pagamento) => pagamento.solicitacaoId === solicitacaoId && pagamento.status === 'CONFIRMADO',
+  );
+
+  if (usuario.papel !== 'admin' && propostaAceita && pagamentoConfirmado) {
+    throw new Error('Solicitações aceitas e pagas não podem ser apagadas.');
+  }
+
+  const arquivos = memoryStore.arquivos.filter((arquivo) => arquivo.solicitacaoId === solicitacaoId);
+  for (const arquivo of arquivos) {
+    const caminho = String(arquivo.caminho || '').replace(/^[/\\]+/, '');
+    const absoluto = path.resolve(process.cwd(), caminho);
+    const raizUploads = path.resolve(process.cwd(), 'uploads');
+    const relativo = path.relative(raizUploads, absoluto);
+    if (relativo && relativo !== '..' && !relativo.startsWith(`..${path.sep}`) && !path.isAbsolute(relativo)) {
+      try {
+        fs.unlinkSync(absoluto);
+      } catch (error) {
+        if (error.code !== 'ENOENT') throw error;
+      }
+    }
+  }
+
+  for (const chave of ['historicoStatus', 'comentarios', 'arquivos', 'propostas', 'pagamentos']) {
+    memoryStore[chave] = memoryStore[chave].filter((item) => item.solicitacaoId !== solicitacaoId);
+  }
+  memoryStore.solicitacoes = memoryStore.solicitacoes.filter((item) => item.id !== solicitacaoId);
+}
+
+async function garantirAcesso(id, usuario) {
+  const solicitacao = await buscarSolicitacaoPorId(id, usuario);
+  if (!solicitacao) throw new Error('Solicitação não encontrada.');
+  return solicitacao;
 }

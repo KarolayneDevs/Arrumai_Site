@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import Botao from '../../components/Botao';
 import '../../styles/auth.css';
 import { apiFetch } from '../../services/api';
+import Icone from '../../components/Icone';
 
 /* =====================================================================
    ENTRAR (RF01)
@@ -76,13 +77,14 @@ export default function Login() {
 
         <div className={`campo ${erros.senha ? 'campo--erro' : ''}`}>
           <label htmlFor="senha">Senha</label>
-          <input id="senha" name="senha" type={verSenha ? 'text' : 'password'} autoComplete="current-password" value={dados.senha} onChange={aoDigitar} />
+          <div className="campo-senha">
+            <input id="senha" name="senha" type={verSenha ? 'text' : 'password'} autoComplete="current-password" value={dados.senha} onChange={aoDigitar} />
+            <button type="button" className="campo-senha__botao" onClick={() => setVerSenha(!verSenha)} aria-label={verSenha ? 'Ocultar senha' : 'Mostrar senha'} title={verSenha ? 'Ocultar senha' : 'Mostrar senha'}>
+              <Icone nome={verSenha ? 'olhoFechado' : 'olho'} tamanho={21} />
+            </button>
+          </div>
           {erros.senha && <span className="erro">{erros.senha}</span>}
         </div>
-
-        <button type="button" className="botao botao--texto ver-senha" onClick={() => setVerSenha(!verSenha)}>
-          {verSenha ? 'Esconder senha' : 'Mostrar senha'}
-        </button>
 
         <Botao type="submit" className="botao--cheio">Entrar</Botao>
       </form>

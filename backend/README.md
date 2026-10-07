@@ -16,6 +16,7 @@ Este diretório concentra a API do projeto ARRUMAI para a primeira fase funciona
 - `src/controllers/`: recebe requisições HTTP e delega a lógica.
 - `src/services/`: guarda a regra de negócio principal.
 - `src/config/`: centraliza banco, upload local e variáveis de ambiente.
+- `src/middleware/auth.js`: valida o token Bearer e disponibiliza o usuário autenticado em `req.usuario`.
 - `src/services/authService.js`: valida cadastro, cria hash da senha e inicia sessões.
 - `src/controllers/authController.js`: responde às requisições HTTP de autenticação.
 - `src/routes/auth.routes.js`: expõe cadastro e login.
@@ -79,6 +80,7 @@ Essa ordem deve ser seguida para que o fluxo do sistema fique consistente e os s
 - GET /api/solicitacoes
 - GET /api/solicitacoes/:id
 - POST /api/solicitacoes
+- DELETE /api/solicitacoes/:id
 - PATCH /api/solicitacoes/:id/status
 - POST /api/solicitacoes/:id/comentarios
 - GET /api/solicitacoes/:id/comentarios
@@ -91,7 +93,19 @@ Essa ordem deve ser seguida para que o fluxo do sistema fique consistente e os s
 - PATCH /api/pagamentos/:id/status
 - GET /api/solicitacoes/:id/arquivos
 - POST /api/solicitacoes/:id/arquivos
+- POST /api/solicitacoes/:id/comprovantes
 - GET /api/arquivos/:id/visualizar
+
+As rotas de solicitações exigem o cabeçalho `Authorization: Bearer <token>`. Clientes visualizam e alteram somente as próprias solicitações; administradores podem consultar e excluir solicitações de qualquer cliente.
+
+## Regras de exclusão
+
+- O cliente pode excluir somente solicitações da própria conta.
+- O cliente não pode excluir uma solicitação que tenha proposta `ACEITA` e pagamento `CONFIRMADO`.
+- O administrador pode excluir solicitações em qualquer circunstância.
+- A exclusão remove comentários, histórico, propostas, pagamentos, metadados e arquivos relacionados.
+
+O comprovante de pagamento usa uma rota multipart específica, `POST /api/solicitacoes/:id/comprovantes`, com o campo `comprovante`. O arquivo físico é salvo em `uploads/comprovantes/` com o nome original sanitizado; se já existir um arquivo com o mesmo nome, um contador é acrescentado. Seu metadado é registrado como `COMPROVANTE` e o `comprovanteId` do pagamento aponta para esse registro.
 
 ## Observação importante
 

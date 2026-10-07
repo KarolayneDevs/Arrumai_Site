@@ -11,8 +11,28 @@
 .opcoes--2 { grid-template-columns: repeat(2, 1fr); }
 @media (max-width: 640px) { .opcoes--2 { grid-template-columns: 1fr; } }
 
-/* Botão "Mostrar senhas" */
-.ver-senha { margin: -0.4rem 0 1.1rem; font-size: 0.9rem; }
+/* Controle de visibilidade da senha dentro do campo. */
+.campo-senha { position: relative; }
+.campo-senha input { padding-right: 3.2rem; }
+.campo-senha__botao {
+  position: absolute;
+  top: 50%;
+  right: 0.55rem;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--texto-suave);
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+.campo-senha__botao:hover,
+.campo-senha__botao:focus-visible { background: var(--por-do-sol-claro); color: var(--rio-negro); }
+.campo-senha__botao:focus-visible { outline: 3px solid var(--por-do-sol-claro); }
 
 /* Link "Criar conta" / "Entrar" no pé da tela */
 .troca-modo a { font-weight: 700; color: var(--por-do-sol); }

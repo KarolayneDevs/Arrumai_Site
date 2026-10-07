@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Botao from '../../components/Botao';
 import StatusBadge from '../../components/StatusBadge';
-import { listarSolicitacoesAdmin, mensagemDeErro, usandoDemonstracao } from '../../services/admin';
+import { excluirSolicitacaoAdmin, listarSolicitacoesAdmin, mensagemDeErro, usandoDemonstracao } from '../../services/admin';
 import { formatarData } from '../../utils/datas';
 import { formatarMoeda } from '../../utils/formatar';
 import '../../styles/admin.css';
@@ -29,6 +29,8 @@ export default function PainelAdmin() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
   const [aba, setAba] = useState('novas');
+  const [modoSelecao, setModoSelecao] = useState(false);
+  const [selecionadas, setSelecionadas] = useState([]);
 
   /** Busca as solicitações na API. Também serve para o botão "Tentar de novo". */
   async function carregar() {
@@ -58,6 +60,25 @@ export default function PainelAdmin() {
   const abaAtual = ABAS.find((a) => a.chave === aba);
   const visiveis = lista.filter(abaAtual.testa);
 
+  function alternarSelecao(id) {
+    setSelecionadas((atual) => atual.includes(id) ? atual.filter((item) => item !== id) : [...atual, id]);
+  }
+
+  function selecionarTodas() {
+    setSelecionadas(visiveis.map((item) => item.id));
+  }
+
+  async function apagarSelecionadas() {
+    const itens = lista.filter((item) => selecionadas.includes(item.id));
+    if (!itens.length || !window.confirm(`Apagar ${itens.length} solicitação(ões)? Esta ação não pode ser desfeita.`)) return;
+    const resultados = await Promise.allSettled(itens.map((item) => excluirSolicitacaoAdmin(item.id)));
+    const removidas = itens.filter((_item, indice) => resultados[indice].status === 'fulfilled');
+    const falhas = resultados.filter((resultado) => resultado.status === 'rejected');
+    setLista((atual) => atual.filter((item) => !removidas.some((removida) => removida.id === item.id)));
+    setSelecionadas((atual) => atual.filter((id) => !removidas.some((removida) => removida.id === id)));
+    if (falhas.length) setErro('Não foi possível apagar uma ou mais solicitações.');
+  }
+
   return (
     <div className="container">
       <div className="topo-pagina">
@@ -65,9 +86,14 @@ export default function PainelAdmin() {
           <h1>Painel da equipe</h1>
           <p className="lead lead--curto">Analise os pedidos e decida: aceitar com uma proposta ou recusar.</p>
         </div>
-        <Botao variante="secundario" onClick={carregar} disabled={carregando}>
-          {carregando ? 'Atualizando...' : 'Atualizar lista'}
-        </Botao>
+        <div className="topo-pagina__acoes">
+          <Botao variante="secundario" onClick={carregar} disabled={carregando}>
+            {carregando ? 'Atualizando...' : 'Atualizar lista'}
+          </Botao>
+          <Botao variante="secundario" onClick={() => { setModoSelecao(!modoSelecao); setSelecionadas([]); }}>
+            {modoSelecao ? 'Cancelar seleção' : 'Selecionar'}
+          </Botao>
+        </div>
       </div>
 
       {usandoDemonstracao() && (
@@ -85,7 +111,7 @@ export default function PainelAdmin() {
             role="tab"
             aria-selected={aba === a.chave}
             className={`aba ${aba === a.chave ? 'aba--ativa' : ''}`}
-            onClick={() => setAba(a.chave)}
+            onClick={() => { setAba(a.chave); setSelecionadas([]); }}
           >
             {a.rotulo}
             <span className="aba__contagem">{contagens[a.chave]}</span>
@@ -100,6 +126,16 @@ export default function PainelAdmin() {
           <Botao variante="texto" onClick={carregar}>Tentar de novo</Botao>
         </div>
       )}
+      {modoSelecao && visiveis.length > 0 && (
+        <div className="selecao-acoes">
+          <button type="button" className="botao botao--texto" onClick={selecionarTodas}>
+            Selecionar todas
+          </button>
+          <button type="button" className="botao botao--texto botao--perigo" disabled={!selecionadas.length} onClick={apagarSelecionadas}>
+            Apagar selecionadas ({selecionadas.length})
+          </button>
+        </div>
+      )}
 
       {/* Lista */}
       {!erro && !carregando && visiveis.length === 0 && (
@@ -112,10 +148,17 @@ export default function PainelAdmin() {
         {visiveis.map((s) => (
           <li key={s.id}>
             {/* Solicitações recém-recebidas ganham uma faixa colorida para chamar atenção */}
-            <Link
-              to={`/admin/solicitacao/${s.id}`}
-              className={`item-solicitacao ${s.status === 'recebida' ? 'item-solicitacao--nova' : ''}`}
-            >
+            <div className={`item-solicitacao ${s.status === 'recebida' ? 'item-solicitacao--nova' : ''}`}>
+              {modoSelecao && (
+                <input
+                  className="selecao-checkbox"
+                  type="checkbox"
+                  aria-label={`Selecionar ${s.titulo}`}
+                  checked={selecionadas.includes(s.id)}
+                  onChange={() => alternarSelecao(s.id)}
+                />
+              )}
+              <Link to={`/admin/solicitacao/${s.id}`} className="item-solicitacao__link">
               <div>
                 <small>{s.protocolo} · {s.servicoNome}</small>
                 <h2>{s.titulo}</h2>
@@ -125,7 +168,8 @@ export default function PainelAdmin() {
                 <div><dt>Valor</dt><dd>{formatarMoeda(s.valor)}</dd></div>
               </dl>
               <StatusBadge status={s.status} />
-            </Link>
+              </Link>
+            </div>
           </li>
         ))}
       </ul>

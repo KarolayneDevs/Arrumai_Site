@@ -96,7 +96,13 @@ fieldset.campo { border: 0; padding: 0; min-width: 0; }
 
 /* ---------- Minhas solicitações ---------- */
 .lista-solicitacoes { display: grid; gap: 0.9rem; }
-.item-solicitacao { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 1.5rem; padding: 1.2rem 1.5rem; border: 1px solid var(--borda); border-radius: var(--raio-m); background: var(--branco); text-decoration: none; transition: border-color 0.15s, box-shadow 0.15s; }
+.item-solicitacao { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 1.5rem; padding: 1.2rem 1.5rem; border: 1px solid var(--borda); border-radius: var(--raio-m); background: var(--branco); transition: border-color 0.15s, box-shadow 0.15s; }
+.item-solicitacao__link { display: contents; color: inherit; text-decoration: none; }
+.botao--perigo { color: #8a2d20; border-color: #d9a99c; }
+.botao--perigo:hover { background: #f6e1db; border-color: #8a2d20; color: #7a2a18; }
+.topo-pagina__acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 0.7rem; }
+.selecao-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+.selecao-checkbox { width: 1.2rem; height: 1.2rem; accent-color: var(--por-do-sol); cursor: pointer; }
 .item-solicitacao:hover { border-color: var(--por-do-sol); box-shadow: var(--sombra); }
 .item-solicitacao small { color: var(--texto-suave); }
 .item-solicitacao h2 { font-size: 1.15rem; }
@@ -105,6 +111,8 @@ fieldset.campo { border: 0; padding: 0; min-width: 0; }
 .item-solicitacao__dados dd { font-weight: 700; margin: 0; }
 @media (max-width: 760px) {
   .item-solicitacao { grid-template-columns: 1fr; gap: 0.8rem; justify-items: start; }
+  .item-solicitacao { grid-template-columns: auto 1fr; }
+  .topo-pagina__acoes { width: 100%; }
 }
 
 /* ---------- Detalhe da solicitação ---------- */

@@ -7,7 +7,9 @@ import {
   comentar,
   listarComentarios,
   listarHistorico,
+  excluir,
 } from '../controllers/solicitacoesController.js';
+import { exigirAutenticacao } from '../middleware/auth.js';
 
 // -----------------------------------------------------------------------------
 // ROTAS DE SOLICITAÇÕES
@@ -18,8 +20,10 @@ import {
 
 const router = Router();
 
+router.use('/solicitacoes', exigirAutenticacao);
 router.get('/solicitacoes', listar);
 router.get('/solicitacoes/:id', buscarPorId);
+router.delete('/solicitacoes/:id', excluir);
 router.post('/solicitacoes', criar);
 router.patch('/solicitacoes/:id/status', atualizarStatus);
 router.post('/solicitacoes/:id/comentarios', comentar);

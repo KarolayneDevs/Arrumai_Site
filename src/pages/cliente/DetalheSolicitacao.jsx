@@ -15,7 +15,7 @@ import {
   getSolicitacao,
   responderProposta,
   SOLICITACOES,
-  uploadArquivoSolicitacao,
+  uploadComprovanteSolicitacao,
   urlArquivoSolicitacao,
 } from '../../services/solicitacoes';
 import { getServico } from '../../services/servicos';
@@ -216,7 +216,7 @@ export default function DetalheSolicitacao() {
     setErroPagamento('');
     try {
       // O arquivo é salvo no disco e seu ID vincula o comprovante ao pagamento.
-      const respostaArquivo = await uploadArquivoSolicitacao(id, arquivoComprovanteSelecionado, 'COMPROVANTE');
+      const respostaArquivo = await uploadComprovanteSolicitacao(id, arquivoComprovanteSelecionado);
       const arquivoSalvo = respostaArquivo.data || respostaArquivo;
       const pagamento = await criarPagamentoSolicitacao(id, {
         valor: valorProposta,
