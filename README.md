@@ -104,6 +104,6 @@ senha de app sem colocar credenciais no Git.
 | Nome | GitHub |
 |------|--------|
 | ALICE QUELY TEIXEIRA SOMBRA - back | [@quely78](https://github.com/quely78) |
-| KAROLAYNE DINIZ - banco de dados | [@KarolayneDevs](https://github.com/KarolayneDevs) |
+| KAROLAYNE DINIZ - back/banco de dados | [@KarolayneDevs](https://github.com/KarolayneDevs) |
 | MARIA LUANA PINHEIRO MARAES - front | 
 | MARIA HELENA MOTA CAMPOS - front | [@mariahelenamotta](https://github.com/mariahelenamotta) |
