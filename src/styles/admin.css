@@ -22,7 +22,7 @@
   background: var(--papel-escuro); color: var(--rio-negro);
   font-size: 0.8rem; text-align: center;
 }
-.aba--ativa .aba__contagem { background: var(--por-do-sol); color: var(--branco); }
+.aba--ativa .aba__contagem { background: var(--por-do-sol-forte); color: var(--branco); }
 
 /* Solicitação recém-recebida: faixa lateral chamativa */
 .item-solicitacao--nova { border-left: 6px solid var(--por-do-sol); }

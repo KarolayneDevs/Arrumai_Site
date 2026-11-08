@@ -20,6 +20,15 @@
   --mata-claro: #e5ebe1;           /* fundo do selo "Concluída" */
   --cinza-claro: #e6e2da;          /* fundo do selo "Recebida" */
 
+  /* --- Tons escuros para contraste (WCAG AA) ---
+     O Pôr-do-sol e a Mata originais ficam abaixo de 3:1 sobre o Papel,
+     então eles continuam nas faixas, marcadores e ícones; texto, links,
+     fundo de botão com texto branco e contorno de foco usam estes tons. */
+  --por-do-sol-forte: #a85a2e;     /* 5,0:1 com texto branco; 4,6:1 sobre o Papel */
+  --por-do-sol-escuro: #8f4a24;    /* hover do botão principal */
+  --mata-forte: #5f7355;           /* 4,7:1 sobre o Papel (mensagens de sucesso) */
+  --borda-campo: #968776;          /* 3,5:1 sobre branco: contorno visível dos campos */
+
   /* --- Tipografia: uma só família sans (Liberation Sans) --- */
   --fonte: 'Liberation Sans', Arial, Helvetica, sans-serif;
 
