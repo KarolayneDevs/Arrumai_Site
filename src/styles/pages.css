@@ -24,7 +24,7 @@
 .hero__interno { display: grid; grid-template-columns: 1.05fr 1fr; gap: 3rem; align-items: center; }
 .hero__texto { display: flex; flex-direction: column; align-items: flex-start; gap: 1.2rem; }
 .pilula { padding: 0.3rem 0.9rem; border-radius: 999px; background: var(--papel-escuro); font-size: 0.85rem; font-weight: 700; }
-.destaque { color: var(--por-do-sol); }
+.destaque { color: var(--por-do-sol-forte); }
 .hero__apoio { font-size: 1.15rem; color: var(--texto-suave); }
 .hero__acoes { display: flex; flex-wrap: wrap; gap: 0.8rem; }
 
@@ -50,7 +50,7 @@
 /* ---------- Home: números ---------- */
 .numeros { display: flex; flex-wrap: wrap; gap: 1rem 3rem; padding-block: 1.5rem; border-block: 1px solid var(--borda); }
 .numeros p { display: flex; align-items: baseline; gap: 0.6rem; color: var(--texto-suave); font-size: 0.95rem; }
-.numeros strong { font-size: 1.8rem; color: var(--por-do-sol); }
+.numeros strong { font-size: 1.8rem; color: var(--por-do-sol-forte); }
 
 /* ---------- Home: para quem é ---------- */
 .publico { padding: 1.4rem; border: 1px solid var(--borda); border-top: 6px solid var(--cor); border-radius: var(--raio-m); background: var(--branco); }
@@ -73,7 +73,9 @@
 .servico p { color: var(--texto-suave); flex: 1; }
 
 /* ---------- Login ---------- */
-.campo--check label { display: flex; gap: 0.6rem; font-weight: 400; }
+.campo--check label { display: flex; align-items: flex-start; gap: 0.6rem; font-weight: 400; cursor: pointer; }
+/* Caixa maior que o padrão do navegador, mais fácil de tocar no celular */
+.campo--check input[type='checkbox'] { flex: none; width: 1.25rem; height: 1.25rem; margin-top: 0.15rem; accent-color: var(--por-do-sol-forte); cursor: pointer; }
 .troca-modo { margin-top: 1.2rem; }
 
 /* ---------- Nova solicitação ---------- */
@@ -85,7 +87,7 @@ fieldset.campo { border: 0; padding: 0; min-width: 0; }
 .opcao small { color: var(--texto-suave); }
 .opcao svg { color: var(--por-do-sol); }
 .opcao--marcada { border-color: var(--por-do-sol); background: var(--por-do-sol-claro); }
-.opcao:focus-within { outline: 3px solid var(--por-do-sol); outline-offset: 2px; }
+.opcao:focus-within { outline: 3px solid var(--por-do-sol-forte); outline-offset: 2px; }
 
 .lista-arquivos { margin-bottom: 1.5rem; border: 1px solid var(--borda); border-radius: var(--raio-p); background: var(--branco); }
 .lista-arquivos li { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.6rem 1rem; }
@@ -137,7 +139,7 @@ fieldset.campo { border: 0; padding: 0; min-width: 0; }
 .comentario small { color: var(--texto-suave); }
 .comentario--cliente { margin-left: auto; background: var(--mata-claro); }
 .comentarios__form { display: flex; gap: 0.7rem; }
-.comentarios__form input { flex: 1; padding: 0.75rem 0.9rem; border: 1.5px solid var(--borda); border-radius: var(--raio-p); font: inherit; }
+.comentarios__form input { flex: 1; padding: 0.75rem 0.9rem; border: 1.5px solid var(--borda-campo); border-radius: var(--raio-p); font: inherit; }
 @media (max-width: 560px) {
   .comentario { max-width: 100%; }
   .comentarios__form { flex-direction: column; }

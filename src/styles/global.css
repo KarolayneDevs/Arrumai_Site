@@ -46,7 +46,7 @@ ul, ol { padding: 0; list-style: none; }
 
 /* Foco visível para quem navega pelo teclado (acessibilidade, RNF01) */
 :focus-visible {
-  outline: 3px solid var(--por-do-sol);
+  outline: 3px solid var(--por-do-sol-forte);
   outline-offset: 3px;
 }
 

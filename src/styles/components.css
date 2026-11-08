@@ -26,8 +26,8 @@
 .botao:hover { transform: translateY(-1px); }
 .botao:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-.botao--principal { background: var(--por-do-sol); color: var(--branco); }
-.botao--principal:hover { background: #b96b3f; }
+.botao--principal { background: var(--por-do-sol-forte); color: var(--branco); }
+.botao--principal:hover { background: var(--por-do-sol-escuro); }
 
 .botao--secundario { background: transparent; color: var(--rio-negro); border-color: var(--rio-negro); }
 .botao--secundario:hover { background: var(--rio-negro); color: var(--papel); }
@@ -129,7 +129,7 @@
 .cabecalho__menu { display: flex; align-items: center; gap: 1.6rem; }
 .cabecalho__menu a:not(.botao) { text-decoration: none; font-size: 0.95rem; }
 .cabecalho__menu a:not(.botao):hover,
-.cabecalho__menu a.active { color: var(--por-do-sol); }
+.cabecalho__menu a.active { color: var(--por-do-sol-forte); }
 .cabecalho__usuario { display: inline-flex; align-items: center; gap: 0.8rem; font-size: 0.95rem; }
 .cabecalho__conta { position: relative; display: inline-flex; }
 .cabecalho__conta-botao {
@@ -143,7 +143,7 @@
   cursor: pointer;
 }
 .cabecalho__conta-botao:hover,
-.cabecalho__conta-botao[aria-expanded='true'] { color: var(--por-do-sol); }
+.cabecalho__conta-botao[aria-expanded='true'] { color: var(--por-do-sol-forte); }
 .cabecalho__conta-caixa {
   position: absolute;
   z-index: 12;
@@ -220,19 +220,52 @@
 .campo input[type='text'],
 .campo input[type='email'],
 .campo input[type='password'],
+.campo input[type='tel'],
+.campo input[type='number'],
+.campo input[type='date'],
 .campo select,
 .campo textarea {
   width: 100%;
   padding: 0.75rem 0.9rem;
-  border: 1.5px solid var(--borda);
+  border: 1.5px solid var(--borda-campo);
   border-radius: var(--raio-p);
   background: var(--branco);
   font: inherit;
   color: inherit;
 }
 .campo textarea { min-height: 140px; resize: vertical; }
-.campo input:focus, .campo select:focus, .campo textarea:focus { outline: 3px solid var(--por-do-sol-claro); border-color: var(--por-do-sol); }
-.campo--erro input, .campo--erro select, .campo--erro textarea { border-color: #b3402a; }
+.campo input:focus, .campo select:focus, .campo textarea:focus { outline: 3px solid var(--por-do-sol-claro); border-color: var(--por-do-sol-forte); }
+
+/* Seletor de arquivo: mesma caixa dos outros campos e botão no estilo do site.
+   Vale fora de .campo também (comprovante e documento final). */
+input[type='file'] {
+  width: 100%;
+  max-width: 100%;
+  padding: 0.5rem;
+  border: 1.5px dashed var(--borda-campo);
+  border-radius: var(--raio-p);
+  background: var(--branco);
+  color: var(--texto-suave);
+  font: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+input[type='file']::file-selector-button {
+  margin-right: 0.9rem;
+  padding: 0.55rem 1rem;
+  border: 1px solid #8a5a3b;
+  border-radius: var(--raio-p);
+  background: var(--papel);
+  color: var(--rio-negro);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+input[type='file']:hover::file-selector-button { background: #8a5a3b; color: var(--branco); }
+input[type='file']:disabled { opacity: 0.6; cursor: not-allowed; }
+/* .campo.campo--erro precisa vencer ".campo input[type='text']" (mesma força, vem depois) */
+.campo.campo--erro input, .campo.campo--erro select, .campo.campo--erro textarea { border-color: #b3402a; }
 .erro { color: #b3402a; font-size: 0.9rem; font-weight: 700; }
 
 /* ---------- Cartão genérico ---------- */
