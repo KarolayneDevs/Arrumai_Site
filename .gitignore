@@ -6,3 +6,8 @@ dist/
 .env.local
 .DS_Store
 npm-debug.log*
+
+# Arquivos enviados pelo site (documentos e comprovantes são privados).
+# Os .gitkeep ficam no Git para as pastas existirem ao clonar o projeto.
+backend/uploads/*/*
+!backend/uploads/*/.gitkeep
